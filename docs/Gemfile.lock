@@ -1,7 +1,7 @@
 PATH
   remote: ..
   specs:
-    phlex-forms (0.2.9)
+    phlex-forms (0.3.0)
       activesupport (>= 7.0, < 9)
       glyphs (>= 0.2.0, < 1)
       phlex (~> 2.0, >= 2.0.0)
@@ -466,7 +466,7 @@ CHECKSUMS
   parallel (2.1.0) sha256=b35258865c2e31134c5ecb708beaaf6772adf9d5efae28e93e99260877b09356
   parser (3.3.11.1) sha256=d17ace7aabe3e72c3cc94043714be27cc6f852f104d81aa284c2281aecc65d54
   phlex (2.4.1) sha256=e596717fbfe38b5271840266758779ebe75092e02629f0c170287e6290a70b12
-  phlex-forms (0.2.9)
+  phlex-forms (0.3.0)
   phlex-rails (2.4.0) sha256=2bcddbd488681acb25753bab1887d3ac150e644244ff8ba307f2171a4d0195f5
   phlex-reactive (0.12.2) sha256=b8d4606ed20ba9e339d0fcf121badfe99ea803d10040321874e751392da9643f
   pp (0.6.4) sha256=dfcb0fce700c41456265922884f9fe195d7fbb0674a3578e6c0f69588e82b570
