@@ -8,7 +8,10 @@ module Forms
     def initialize(*modifiers, name: nil, id: nil, multiple: false, accept: nil,
                    error: false, disabled: false, required: false, full_width: true, **attributes)
       @modifiers = normalize_modifiers(modifiers)
-      @name = name
+      # Rails file_field parity: a multiple input needs an array param name, or
+      # the browser collapses the selection into one scalar file — which a host
+      # app's `params.expect(attr: [])` then silently discards.
+      @name = multiple && name && !name.to_s.end_with?("[]") ? "#{name}[]" : name
       @id = id
       @multiple = multiple
       @accept = accept

@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **`FileInput` multiple uploads submit an array** (Rails `file_field` parity):
+  with `multiple:` set, the input name now gets `[]` appended (unless already
+  present), for the standalone component, the `Plain` variant, and the form
+  builder path. Without it the browser collapsed a multi-file selection into
+  ONE scalar param, which a host app's `params.expect(attr: [])` silently
+  discarded — uploads no-opped with a success response.
+
 ### Added
 
 - **`checkbox_group` — batched checkbox group for array-valued fields** (the
