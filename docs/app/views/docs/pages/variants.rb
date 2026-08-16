@@ -20,7 +20,7 @@ class Views::Docs::Pages::Variants < DocsUI::Page
       md <<~'MD'
         Any positional symbol that isn't a type override is a daisyUI variant,
         stacked onto the inner input exactly as the
-        [daisyui gem](https://github.com/mhenrixon/daisyui) stacks them:
+        [daisyui gem](https://github.com/zoolutions/daisyui) stacks them:
       MD
       DocsUI::Code(<<~'RUBY')
         f.field :email, :primary, :sm       # input input-primary input-sm
