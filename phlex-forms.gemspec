@@ -33,11 +33,11 @@ Gem::Specification.new do |s|
   end
   s.bindir = "exe"
   s.executables = s.files.grep(%r{\Aexe/}) { |f| File.basename(f) }
-  s.homepage = "https://github.com/mhenrixon/phlex-forms"
+  s.homepage = "https://github.com/zoolutions/phlex-forms"
   s.metadata = {
-    "source_code_uri" => "https://github.com/mhenrixon/phlex-forms",
-    "changelog_uri" => "https://github.com/mhenrixon/phlex-forms/blob/main/CHANGELOG.md",
-    "bug_tracker_uri" => "https://github.com/mhenrixon/phlex-forms/issues",
+    "source_code_uri" => "https://github.com/zoolutions/phlex-forms",
+    "changelog_uri" => "https://github.com/zoolutions/phlex-forms/blob/main/CHANGELOG.md",
+    "bug_tracker_uri" => "https://github.com/zoolutions/phlex-forms/issues",
     "rubygems_mfa_required" => "true"
   }
 
