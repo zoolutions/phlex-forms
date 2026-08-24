@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# docs-kit synced: v1.0.8
+
 # docs-kit configuration — everything that makes this site look like
 # "phlex-forms" rather than any other docs site. The shared chrome
 # (Shell/Sidebar/ThemeSwitcher/Code/Page) comes from the gem; only this config
@@ -33,7 +35,7 @@ Rails.application.config.to_prepare do
 
     # A link to the source repo + the gem, rendered with shipped brand marks.
     c.topbar_links = [
-      { href: "https://github.com/mhenrixon/phlex-forms", label: "GitHub", icon: :github },
+      { href: "https://github.com/zoolutions/phlex-forms", label: "GitHub", icon: :github },
       { href: "https://rubygems.org/gems/phlex-forms", label: "RubyGems", icon: :rubygems }
     ]
 
@@ -70,7 +72,7 @@ Rails.application.config.to_prepare do
     c.landing.install = { code: 'gem "phlex-forms"', filename: "Gemfile", lexer: :ruby }
     c.landing.ctas = [
       { label: "Get started", href: "/docs/overview", style: :primary },
-      { label: "GitHub", href: "https://github.com/mhenrixon/phlex-forms", style: :ghost, icon: :github }
+      { label: "GitHub", href: "https://github.com/zoolutions/phlex-forms", style: :ghost, icon: :github }
     ]
     c.landing.features = [
       { icon: "wand-sparkles", title: "Model-driven inference",

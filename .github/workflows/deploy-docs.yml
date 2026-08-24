@@ -8,8 +8,8 @@ permissions:
   packages: write
 jobs:
   deploy:
-    uses: mhenrixon/docs-kit/.github/workflows/deploy.yml@main
+    uses: zoolutions/docs-kit/.github/workflows/deploy.yml@main
     with:
-      image: mhenrixon/phlex-forms
+      image: zoolutions/phlex-forms
       service: phlex-forms
     secrets: inherit
