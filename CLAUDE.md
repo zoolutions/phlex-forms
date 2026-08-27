@@ -114,7 +114,7 @@ session model. See `.claude/rules/agents.md`.
 ## Release & docs deploy
 
 - `rake release[X.Y.Z]` bumps the version, verifies `gem build --strict`, pushes, and creates the GitHub release; CI (`release.yml`) tests, builds, signs (Sigstore), and publishes to RubyGems via trusted publishing.
-- The docs site deploys on release via `.github/workflows/deploy-docs.yml`, which calls docs-kit's reusable Kamal + GHCR workflow. `image`/`service` are `mhenrixon/phlex-forms`.
+- The docs site deploys on release via `.github/workflows/deploy-docs.yml`, which calls docs-kit's reusable dash + GHCR workflow. `image`/`service` are `zoolutions/phlex-forms`.
 
 ## More Documentation
 
