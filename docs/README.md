@@ -1,6 +1,6 @@
 # phlex-forms docs
 
-The documentation site for [phlex-forms](https://github.com/mhenrixon/phlex-forms),
+The documentation site for [phlex-forms](https://github.com/zoolutions/phlex-forms),
 built on [docs-kit](https://docs-kit.zoolutions.llc) and served at
 <https://phlex-forms.zoolutions.llc>.
 
@@ -19,5 +19,5 @@ Pages live in `app/views/docs/pages/` and register in `app/models/doc.rb`
 
 ## Deploy
 
-`bin/deploy` (Kamal) or the `Deploy docs` GitHub workflow (runs on release).
+`bin/deploy` (dash) or the `Deploy docs` GitHub workflow (runs on release).
 Regenerate the social cards with `bin/rails docs_kit:og` after landing changes.
