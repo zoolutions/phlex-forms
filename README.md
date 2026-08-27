@@ -4,7 +4,7 @@ A model-bound form builder for [Phlex](https://www.phlex.fun) — forms as
 first-class Phlex classes, types inferred from your model, DaisyUI styling by
 default (and a plain-HTML theme when you want none), and optional
 **server-truth live validation** over
-[phlex-reactive](https://github.com/mhenrixon/phlex-reactive).
+[phlex-reactive](https://github.com/zoolutions/phlex-reactive).
 
 ```ruby
 class UserForm < Forms::Base
@@ -158,7 +158,7 @@ Both work on inline forms (`f.row { … }`) and inside `fields_for` builders.
 
 `as: :tags` renders a polished tag/chip input — label + error/hint chrome and
 daisyUI styling on top of
-[phlex-reactive](https://github.com/mhenrixon/phlex-reactive)'s client-only tag
+[phlex-reactive](https://github.com/zoolutions/phlex-reactive)'s client-only tag
 primitives (form state, no server round trips). **Requires phlex-reactive** (the `:tags` role is
 registered only when it's loaded).
 

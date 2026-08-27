@@ -3,9 +3,9 @@
 A model-bound form builder for [Phlex](https://www.phlex.fun): `field :email`
 renders a label, an input, and an error/hint in one call, inferring the input
 type and the `required` flag from the model. DaisyUI-styled by default (via the
-[`daisyui`](https://github.com/mhenrixon/daisyui) gem) with a Plain (unstyled)
+[`daisyui`](https://github.com/zoolutions/daisyui) gem) with a Plain (unstyled)
 theme fallback, plus optional server-truth live validation over
-[phlex-reactive](https://github.com/mhenrixon/phlex-reactive).
+[phlex-reactive](https://github.com/zoolutions/phlex-reactive).
 
 ## Tech Stack
 
