@@ -52,9 +52,12 @@ All work goes through PRs.
 
 ## Release
 
-Releases go through `rake release[X.Y.Z]` (bumps version, verifies the build,
-commits, pushes, creates the GitHub Release). The Release workflow then publishes
-to RubyGems. Never `gem push` by hand.
+Releases go through `bin/release` (`bin/release` = patch, `minor`, `major`, or
+an explicit `X.Y.Z`; `list` shows recent tags and the next versions, `--dry-run`
+previews, `--force` re-cuts an existing tag). It shows the commits since the
+last tag, asks for confirmation, then hands off to `rake release[X.Y.Z]` (bumps
+version, verifies the build, commits, pushes, creates the GitHub Release). The
+Release workflow then publishes to RubyGems. Never `gem push` by hand.
 
 ## Pre-Commit Checklist
 
@@ -68,7 +71,7 @@ bundle exec rspec     # Suite
 
 - **NEVER** commit directly to `main`
 - **NEVER** force push to shared branches
-- **NEVER** `gem push` manually — use `rake release[X.Y.Z]`
+- **NEVER** `gem push` manually — use `bin/release` (wraps `rake release[X.Y.Z]`)
 - **ALWAYS** run validators before committing
 - **ALWAYS** write meaningful commit messages
 - Keep commits small and focused — one logical change per commit
