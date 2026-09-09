@@ -1,0 +1,23 @@
+.claude/rules/git-workflow.md
+  s_5527e5352191e4::t_4df110261a20fa 55-60,74
+bin/release
+  s_5527e5352191e4::t_83d45a3d2483bd 1-111
+CLAUDE.md
+  s_5527e5352191e4::t_62caf595d8d6e9 31,116
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "a2708438c291ed6c99af971702ff647b1bae09ba",
+  "prompts": {},
+  "sessions": {
+    "s_5527e5352191e4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "40d6d598-7502-4e8d-b0f7-65987b9adf3c",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "mhenrixon <mikael@mhenrixon.com>"
+    }
+  }
+}
