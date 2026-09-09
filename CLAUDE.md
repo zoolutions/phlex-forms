@@ -28,7 +28,7 @@ theme fallback, plus optional server-truth live validation over
 4. **NO hard dependency on daisyui or phlex-reactive** — both are soft: `require`-rescue-`LoadError` + Zeitwerk `ignore` of the files that reference them. The gem must boot and render (Plain theme) without either.
 5. **NO `raw`/`html_safe` on user/model data** — let Phlex escape; only gem-authored trusted markup may bypass it. Field names, choices, values are user-influenced.
 6. **NO caller options silently lost** — in `field`, explicit `as:`/`choices:`/caller kwargs always win over inferred attributes.
-7. **NO manual `gem push`** — release via `rake release[X.Y.Z]` (stages ONLY the version file; `Gemfile.lock` is gitignored, correct for a library gem).
+7. **NO manual `gem push`** — release via `bin/release` (patch/minor/major/explicit; wraps `rake release[X.Y.Z]`, which stages ONLY the version file + the docs lockfile pin; the gem root `Gemfile.lock` is gitignored, correct for a library gem).
 
 ### Always Do
 1. **TDD**: write tests BEFORE implementation (RED → GREEN → REFACTOR).
@@ -113,7 +113,7 @@ session model. See `.claude/rules/agents.md`.
 
 ## Release & docs deploy
 
-- `rake release[X.Y.Z]` bumps the version, verifies `gem build --strict`, pushes, and creates the GitHub release; CI (`release.yml`) tests, builds, signs (Sigstore), and publishes to RubyGems via trusted publishing.
+- `bin/release [patch|minor|major|X.Y.Z]` (`list` / `--dry-run` / `--force`) computes the next version, shows the commits since the last tag, confirms, then runs `rake release[X.Y.Z]`, which bumps the version, verifies `gem build --strict`, pushes, and creates the GitHub release; CI (`release.yml`) tests, builds, signs (Sigstore), and publishes to RubyGems via trusted publishing.
 - The docs site deploys on release via `.github/workflows/deploy-docs.yml`, which calls docs-kit's reusable dash + GHCR workflow. `image`/`service` are `zoolutions/phlex-forms`.
 
 ## More Documentation
