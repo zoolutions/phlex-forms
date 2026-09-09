@@ -78,8 +78,8 @@ module Forms
       render theme[:submit].new(*, model: @model, **, &)
     end
 
-    def rich_textarea(name, *modifiers, **)
-      render field_object(name).rich_textarea(*modifiers, **)
+    def rich_textarea(name, *modifiers, **, &)
+      render field_object(name).rich_textarea(*modifiers, **), &
     end
     alias rich_text_area rich_textarea
 

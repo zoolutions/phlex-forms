@@ -9,6 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **`rich_textarea` forwards its block into `<lexxy-editor>`**: Lexxy configures
+  an editor through CHILD elements — `<lexxy-prompt>` for @mentions,
+  `<lexxy-code-language-picker>` for code blocks — but the component rendered
+  the element with no block and `Form#rich_textarea` never forwarded one, so
+  `f.rich_textarea(:content) { ... }` silently dropped its content. A host
+  could wire @mentions and get an editor that never prompts, with no error
+  anywhere (a host app's mention endpoint 500'd for months unnoticed, because
+  nothing ever called it).
+- **`rich_textarea` wires Active Storage's direct-upload endpoints**: Lexxy
+  uploads attachments through `data-direct-upload-url` /
+  `data-blob-url-template` on the element. Lexxy's own Rails tag helper sets
+  them; this component built the element itself and did not, so rich text
+  editors silently lost image uploads. Set as PATHS (a multi-host app must not
+  pin uploads to whichever host rendered the page first), fully guarded — no
+  Rails dependency is introduced, and a caller-supplied value always wins.
+
 - **`FileInput` multiple uploads submit an array** (Rails `file_field` parity):
   with `multiple:` set, the input name now gets `[]` appended (unless already
   present), for the standalone component, the `Plain` variant, and the form
