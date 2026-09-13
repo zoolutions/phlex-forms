@@ -1,6 +1,6 @@
 # Testing: layers, helpers, and what is and is not covered
 
-RSpec, 18 spec files, **198 examples** (`grep -rhE '^\s*it ["(]' spec
+RSpec, 18 spec files, **202 examples** (`bundle exec rspec --dry-run`; a line-based `grep` for `it` says 198 because `spec/forms/components_spec.rb` builds five examples from one `each` loop) (`grep -rhE '^\s*it ["(]' spec
 --include='*_spec.rb' | wc -l`). `.rspec` loads `spec_helper` for every file and
 prints documentation format; the suite runs in random order with a seeded
 `srand`.

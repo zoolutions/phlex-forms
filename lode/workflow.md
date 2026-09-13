@@ -10,7 +10,7 @@ rest of `lode/`.
 | Purpose | Command | Notes |
 |---|---|---|
 | fast loop (one file) | `bundle exec rspec spec/<path>_spec.rb` | no network, no database, no services; a unit file runs in well under a second |
-| full suite | `bundle exec rspec` | 198 examples, all in-process. Safe to run in two worktrees at once — nothing shared, no ports, no fixture dirs |
+| full suite | `bundle exec rspec` | 202 examples, all in-process. Safe to run in two worktrees at once — nothing shared, no ports, no fixture dirs |
 | lint | `bundle exec rubocop lib spec` | the CI Lint job's exact invocation, and the only one that works. `bundle exec rubocop -A lib spec` to autocorrect. The two paths are deliberate: `Rakefile`, `bin/` and `*.gemspec` are not linted |
 | both, as CI sees them | `bundle exec rspec && bundle exec rubocop lib spec` | **not** `bundle exec rake`. The default task is `spec` then `rubocop`, and `RuboCop::RakeTask` passes no paths, so RuboCop descends into `docs/`, loads `docs/.rubocop.yml` and dies on `cannot load such file -- docs_kit/rubocop` — that gem is in the docs bundle, not the root one. `bundle exec rake` therefore always fails at the lint step, whatever the code says. `CLAUDE.md` and `.claude/rules/git-workflow.md` both still name it as the pre-commit gate |
 | one CI cell locally | n/a | the matrix is only Ruby 3.4 and 4.0 running the same two commands; `.tool-versions` pins 4.0.5 |
@@ -139,7 +139,7 @@ Reviewer suggestions that are wrong in this repository.
 ## Flake sources
 
 - **None observed in the gem suite.** No network, no database, no clock, no
-  filesystem writes, no sleeps — 198 in-process examples.
+  filesystem writes, no sleeps — 202 in-process examples.
 - The two real non-determinism surfaces, if one ever appears:
   - **Random order plus global state.** `config.order = :random` with a seeded
     `srand`, and the only automatic cleanup is
@@ -162,7 +162,7 @@ Reviewer suggestions that are wrong in this repository.
 | `docs/Gemfile.lock` | never hand-merge. Take the base's file — it carries the released `phlex-forms` pin. If the branch genuinely changed docs dependencies, edit `docs/Gemfile` and re-run `cd docs && bundle install`; if that fails on the `PLATFORMS` list, stop and ask |
 | `docs/bun.lock` | take the base's file; if the branch changed `docs/package.json`, re-run `cd docs && bun install` |
 | `lib/phlex_forms/version.rb` | releases land directly on `main`, so a feature branch normally never touches it. A conflict here means the branch bumped it deliberately — keep the branch's bump, or ask if the intent is not in its commits |
-| `docs/app/models/doc.rb` | append-only registry: keep both `page` lines, base order first |
+| `docs/app/models/doc.rb` | append-only registry: keep both `page` lines, base order first. `docs/config/routes.rb` is docs-kit boilerplate serving every page through one `docs/:doc` route, so it does not conflict per page |
 | `docs/app/assets/stylesheets/tailwind.sources.css` | generated. Take either side, then regenerate with `cd docs && bin/build-css` and verify the three `@source` paths are real |
 | `lib/phlex_forms/theme.rb` | both sides usually added a role: keep both entries in **both** the `daisy` and `plain` maps, or the plain path raises `KeyError` at request time |
 | the gem's `Gemfile.lock` | cannot conflict — it is gitignored |
