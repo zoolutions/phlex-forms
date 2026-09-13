@@ -8,3 +8,6 @@ Gemfile.lock
 # rspec failure tracking
 .rspec_status
 *.gem
+
+# lode scratch space (evidence, gate reports) — never committed
+/lode/tmp/

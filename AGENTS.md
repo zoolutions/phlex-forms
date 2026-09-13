@@ -12,6 +12,13 @@ with a Plain (unstyled) theme fallback, and offers optional server-truth live
 validation over phlex-reactive. The gem also **dogfoods a docs site** under
 `docs/` (built on docs-kit).
 
+## Memory
+
+Durable project memory lives in `lode/` (index: `lode/lode-map.md`). Read it
+before exploring the code. `lode/review/` holds accepted review findings as
+rules about the system; `/lode:gate` enforces them before any push and
+`/lode:learn` adds to them.
+
 ## The two things you'll be asked to do
 
 ### A. Change the gem (a component, inference rule, theme, config, the live layer)

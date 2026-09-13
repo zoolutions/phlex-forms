@@ -5,7 +5,10 @@ the whole team (and every autonomous session) shares the same conventions.
 
 ```
 .claude/
-├── commands/   Slash commands (/lfg, /tdd, /plan, /security, …) — one markdown file each
+├── commands/   This repo's own slash commands (/architect, /security, /review-pr) — one markdown
+│            file each. The workflow commands (/lode:lfg, /lode:tdd, /lode:plan, /lode:review-pr,
+│            /lode:finish-prs, /lode:debug-flaky) come from the lode@zoolutions plugin and read
+│            lode/workflow.md for everything repo-specific.
 ├── rules/      Standing rules auto-loaded into context (coding-style, testing, git-workflow, agents)
 ├── README.md   This file — how to author a command
 └── SKILL_TEMPLATE.md   Copy-paste starting point for a new command
@@ -14,7 +17,7 @@ the whole team (and every autonomous session) shares the same conventions.
 ## Anatomy of a command
 
 A command is a markdown file under `commands/` with a YAML frontmatter block
-followed by the prompt body. `.claude/commands/tdd.md` is a good reference.
+followed by the prompt body. `.claude/commands/security.md` is a good reference.
 
 ```markdown
 ---
@@ -47,15 +50,15 @@ latest model in that tier, so a command never goes stale on an outdated pin.
 | Tier | Use for | Commands here |
 |------|---------|---------------|
 | `haiku` | Mechanical / config work, diff pattern-scanning | *(none yet)* |
-| `sonnet` | Prescriptive, pattern-following passes with a tight prompt | `/github-review-comments`, `/github-review-failures` |
-| `opus` | Orchestration, security, review synthesis, and reasoning-heavy specialists | `/lfg`, `/architect`, `/security`, `/review-pr`, `/github-review-pr`, `/tdd` |
-| `fable` | Read-only planning that hands execution to cheaper models | `/plan` |
+| `sonnet` | Prescriptive, pattern-following passes with a tight prompt | — |
+| `opus` | Orchestration, security, review synthesis, and reasoning-heavy specialists | `/architect`, `/security`, `/review-pr` |
+| `fable` | Read-only planning that hands execution to cheaper models | — |
 
 Rules of thumb:
 
 - **Always use the alias**, never `claude-opus-4-8` or another full model ID —
   aliases track the latest model per tier and never rot.
-- **`fable` is pinned only on `/plan`.** For a plain interactive session, pick it
+- **`fable` is pinned on no local command.** For a plain interactive session, pick it
   per-session with `/model` when you want the most capable model for architecture
   or the hardest debugging.
 - **Subagents don't inherit the tier for free.** When a command (or you) spawns a

@@ -7,6 +7,15 @@ type and the `required` flag from the model. DaisyUI-styled by default (via the
 theme fallback, plus optional server-truth live validation over
 [phlex-reactive](https://github.com/zoolutions/phlex-reactive).
 
+## Memory
+
+Durable project memory lives in `lode/` (index: `lode/lode-map.md`). Read it
+before exploring the code. `lode/review/` holds accepted review findings as
+rules about the system; `/lode:gate` enforces them before any push and
+`/lode:learn` adds to them. `lode/workflow.md` is the repo profile the shared
+`/lode:` workflow commands read. The lode describes the system as it is;
+`CHANGELOG.md` records what changed.
+
 ## Tech Stack
 
 - **Ruby**: >= 3.4 (aligns with the optional phlex-reactive live integration)
@@ -50,18 +59,24 @@ The docs site under `docs/` has its own bundle (Ruby 4.0.5): `cd docs && bin/dev
 
 ## Slash Commands
 
+The `/lode:` commands come from the `lode@zoolutions` plugin and read
+`lode/workflow.md` for everything repo-specific. The three unprefixed ones are
+local to this repo (`.claude/commands/`).
+
 | Command | Purpose |
 |---------|---------|
-| `/plan` | Fable-powered planning → GitHub issue or `docs/plans/` markdown (read-only; execute with `/lfg`) |
-| `/lfg` | Full autonomous workflow: branch → understand → explore → plan → TDD → verify → PR |
-| `/tdd` | Enforce RED → GREEN → REFACTOR |
+| `/lode:plan` | Read-only planning → GitHub issue or `docs/plans/` markdown (execute with `/lode:lfg`) |
+| `/lode:lfg` | Full autonomous workflow: branch → understand → explore → plan → TDD → verify → PR |
+| `/lode:tdd` | Enforce RED → GREEN → REFACTOR |
 | `/architect` | Coordinate a change across the builder → components → inference → theme → live layers |
 | `/security` | Security audit (HTML escaping, model-bound params, the live action whitelist, CSRF) |
 | `/review-pr` | Review a PR for pattern compliance |
-| `/github-review-pr` | Full PR pass: fix CI failures, then resolve review comments (in that order) |
-| `/github-review-failures` | Fix failing CI checks until green |
-| `/github-review-comments` | Process unresolved PR review comments |
-| `/finish-prs` | Drive a stack of open PRs to merge-ready one at a time |
+| `/lode:review-pr` | Full PR pass: resolve conflicts, fix CI failures, then process review comments |
+| `/lode:finish-prs` | Drive a stack of open PRs to merge-ready one at a time |
+| `/lode:debug-flaky` | Root-cause an intermittent spec — evidence → repro → stress-proofed fix |
+| `/lode:gate` | Pre-PR gate: fresh-context review against the rules and `lode/review/`; the push hook requires it |
+| `/lode:learn` | Write accepted review findings into `lode/review/` |
+| `/lode:sync` | Keep `lode/` true to the code after a change |
 
 ## Architecture
 
@@ -93,9 +108,12 @@ Commands and agents pin a model **tier** via frontmatter aliases, not a full
 model ID — aliases track the latest model in each tier, so pins never go stale:
 
 - `haiku` — mechanical/config work, diff pattern-scans
-- `sonnet` — layer specialists / pattern-following implementation (the default for `/tdd`, the review-comment/failure runbooks)
-- `opus` — orchestration, security, production/PR review (`/lfg`, `/architect`, `/security`, `/review-pr`, `/github-review-pr`)
-- `fable` — pinned only on `/plan` (read-only planning that hands execution to cheaper models); otherwise choose it per-session with `/model` for architecture and the hardest debugging
+- `sonnet` — layer specialists / pattern-following implementation
+- `opus` — orchestration, security, PR review (`/architect`, `/security`, `/review-pr`)
+- `fable` — read-only planning that hands execution to cheaper models; choose it per-session with `/model` for architecture and the hardest debugging
+
+The `/lode:` commands pin their own tiers in the plugin; these three apply to the
+local commands under `.claude/commands/`.
 
 When spawning subagents for mechanical work (file finding, pattern scans), pass a
 cheaper model explicitly (`model: haiku`) rather than letting them inherit the
@@ -118,7 +136,8 @@ session model. See `.claude/rules/agents.md`.
 
 ## More Documentation
 
-- `.claude/commands/` — slash command definitions
+- `lode/` — durable project memory (start at `lode/lode-map.md`)
+- `.claude/commands/` — the repo's own slash commands (`/architect`, `/security`, `/review-pr`)
 - `.claude/rules/` — coding style, git workflow, testing, agents
 - `README.md` — the full field API / inference / theming / live-validation guide
 - `docs/` — the published documentation site (docs-kit)
