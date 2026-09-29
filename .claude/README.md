@@ -47,21 +47,20 @@ latest model in that tier, so a command never goes stale on an outdated pin.
 | Tier | Use for | Commands here |
 |------|---------|---------------|
 | `haiku` | Mechanical / config work, diff pattern-scanning | *(none yet)* |
-| `sonnet` | Prescriptive, pattern-following passes with a tight prompt | `/github-review-comments`, `/github-review-failures` |
-| `opus` | Orchestration, security, review synthesis, and reasoning-heavy specialists | `/lfg`, `/architect`, `/security`, `/review-pr`, `/github-review-pr`, `/tdd` |
-| `fable` | Read-only planning that hands execution to cheaper models | `/plan` |
+| `sonnet` | Prescriptive, pattern-following passes with a tight prompt | `/tdd`, `/github-review-comments`, `/github-review-failures` |
+| `opus` | Orchestration, security, review synthesis, and reasoning-heavy specialists | `/lfg`, `/architect`, `/security`, `/review-pr`, `/github-review-pr`, `/finish-prs` |
+| `fable` | Read-only planning that hands execution to cheaper models; also the session advisor and the `fable-validator` agent | `/plan` |
 
 Rules of thumb:
 
 - **Always use the alias**, never `claude-opus-4-8` or another full model ID —
   aliases track the latest model per tier and never rot.
-- **`fable` is pinned only on `/plan`.** For a plain interactive session, pick it
-  per-session with `/model` when you want the most capable model for architecture
-  or the hardest debugging.
+- **`fable` is pinned on `/plan` and on the `fable-validator` agent.** Sessions run
+  on `opus` with `fable` as the advisor (`.claude/settings.json`).
 - **Subagents don't inherit the tier for free.** When a command (or you) spawns a
   subagent for mechanical work — file finding, naming-convention sweeps, pattern
-  scans — pass a cheaper `model:` explicitly. Left unset, a subagent inherits the
-  session model, so the most mechanical work runs at the highest price.
+  scans — pass a `model:` explicitly. Left unset, a subagent runs on `sonnet`
+  (`CLAUDE_CODE_SUBAGENT_MODEL` in `.claude/settings.json`), not the session model.
 
 The convention is also recorded in the repo `AGENTS.md` ("Slash Commands") so it
 survives across sessions.

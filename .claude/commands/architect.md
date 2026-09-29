@@ -102,6 +102,8 @@ parity) you must hold in your head.
 
 ## Handoff
 
+Run the `fable-validator` agent on the combined diff first. On BLOCK do not open or merge: mark it `needs-user` and report the blockers instead of calling it ready.
+
 Summarize: the layer-ordered plan, files per layer, integration points, the
 theme-parity story (daisy AND plain), the soft-dependency story for anything
 live/reactive, and the architectural decisions made.

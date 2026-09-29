@@ -4,11 +4,14 @@
 
 | Agent | Purpose | When to Use |
 |-------|---------|-------------|
-| Explore | Codebase exploration | Finding files, understanding patterns |
-| Plan | Implementation planning | Complex features, architectural decisions |
-| general-purpose | Multi-step tasks | Research, complex searches |
+| Explore | Codebase exploration (`model: haiku`) | Finding files, understanding patterns |
+| Plan | Implementation planning (`model: sonnet`) | Complex features, architectural decisions |
+| general-purpose | Multi-step tasks (`model: sonnet`) | Research, complex searches |
+| fable-validator | Final validation (pinned to `fable`) | A finished change, before its pull request opens or merges |
 
 ## Immediate Agent Usage
+
+Every agent spawned names its `model:`; one that does not runs on `sonnet` (`CLAUDE_CODE_SUBAGENT_MODEL` in `.claude/settings.json`).
 
 Use agents PROACTIVELY without waiting for user prompt:
 

@@ -100,17 +100,7 @@ daisyui? Plain theme. No phlex-reactive? the `live` macro raises a clear
 
 ## Model tiers (for Claude Code commands & agents)
 
-Commands and agents pin a model **tier** via frontmatter aliases, not a full
-model ID — aliases track the latest model in each tier, so pins never go stale:
-
-- `haiku` — mechanical/config work, diff pattern-scans
-- `sonnet` — layer specialists / pattern-following implementation (the default for `/tdd`, the review-comment/failure runbooks)
-- `opus` — orchestration, security, production/PR review (`/lfg`, `/architect`, `/security`, `/review-pr`, `/github-review-pr`)
-- `fable` — pinned only on `/plan` (read-only planning that hands execution to cheaper models); otherwise choose it per-session with `/model` for architecture and the hardest debugging
-
-When spawning subagents for mechanical work (file finding, pattern scans), pass a
-cheaper model explicitly (`model: haiku`) rather than letting them inherit the
-session model. See `.claude/rules/agents.md`.
+**Models.** Sessions run on `opus` (Opus 5.5) with `fable` (Fable 5.1) as the advisor (`.claude/settings.json`). Fable is spent where judgment matters most: `/plan` runs on Fable, the advisor is consulted at decision points (before choosing an approach, a schema or public API, a migration, a dependency, anything irreversible, and when a failure repeats), and the `fable-validator` agent checks every finished implementation before its pull request opens (`/lfg`, Phase 6.5). Commands pin their tier by alias, never by full model ID: `opus` for orchestration, security, full PR review, payments and production debugging; `sonnet` for the implementation specialists and TDD; `haiku` for mechanical scans. Every spawned agent names its `model:`; one that does not runs on `sonnet` (`CLAUDE_CODE_SUBAGENT_MODEL`), never on the session's model. Plan mode cannot take a model of its own: it runs on Opus and asks the advisor.
 
 ## Testing
 
