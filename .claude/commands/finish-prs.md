@@ -98,7 +98,7 @@ Merge-ready means: `mergeable=MERGEABLE`, no failing checks (2e waits for the pe
 
 ### 2e. Hand off for merge
 
-Run the `fable-validator` agent on the combined diff first. On BLOCK do not open or merge: mark it `needs-user` and report the blockers instead of calling it ready.
+Run the `fable-validator` agent on the combined diff first, handing it the PR body (`gh pr view <PR> --json body`) as the task and the base branch. On BLOCK do not open or merge: mark it `needs-user` and report the blockers instead of calling it ready.
 
 - **`automerge` mode:** only once every check is green. `main` requires only Specs (Ruby 3.4), Specs (Ruby 4.0), Lint and cubic, so GitHub's "mergeable" says nothing about the other checks. Run `gh pr checks <PR> --json name,bucket`: EVERY check in bucket `pass` or `skipping`; any `pending` means wait (`ScheduleWakeup`) and ask again; any `fail` or `cancel` goes back to 2c. Ask again right before the merge (a push while the validator ran leaves checks pending), then a plain `gh pr merge <PR> --squash` (this repo requires linear history; never `--auto`, which would merge on the required checks alone). Then go to Phase 3 to wait for the merge to land before advancing.
 - **Default (pause) mode:** report this PR as ✅ merge-ready with its URL and a one-line "what's in it," and tell the user it's ready to merge. Then **wait** (Phase 3).
