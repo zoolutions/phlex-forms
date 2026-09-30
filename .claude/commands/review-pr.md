@@ -27,7 +27,7 @@ Model touch with no respond_to? guard      -> Inference/#required? must degrade 
 Hard require of daisyui / phlex-reactive   -> Soft dep: require-rescue-LoadError + Zeitwerk ignore
 Reimplementing a daisy leaf's markup       -> Delegate to the daisyui gem via DelegatedField
 raw()/html_safe on model/param free text   -> Let Phlex escape text
-Manual gem push                            -> rake release[X.Y.Z] (CI publishes)
+Manual gem push                            -> bin/release (CI publishes)
 ```
 
 ## Output Format

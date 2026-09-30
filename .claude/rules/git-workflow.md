@@ -55,9 +55,13 @@ All work goes through PRs.
 Releases go through `bin/release` (`bin/release` = patch, `minor`, `major`, or
 an explicit `X.Y.Z`; `list` shows recent tags and the next versions, `--dry-run`
 previews, `--force` re-cuts an existing tag). It shows the commits since the
-last tag, asks for confirmation, then hands off to `rake release[X.Y.Z]` (bumps
-version, verifies the build, commits, pushes, creates the GitHub Release). The
-Release workflow then publishes to RubyGems. Never `gem push` by hand.
+last tag, asks for confirmation, then hands off to `rake release[X.Y.Z]` in
+`rakelib/release.rake` (bumps version + the tracked lockfile pins, verifies the
+build, commits, pushes, creates the GitHub Release). The Release workflow then
+publishes to RubyGems. Never `gem push` by hand. `bin/release`,
+`rakelib/release.rake` and the shared jobs of `release.yml` are the zoolutions
+release kit (canonical copy in docs-kit, see its RELEASE_KIT.md): never edit
+them here — change docs-kit, then `script/release-kit sync`.
 
 ## Pre-Commit Checklist
 
