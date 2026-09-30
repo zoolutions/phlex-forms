@@ -51,11 +51,11 @@ module PhlexForms
     end
 
     # The default theme: :daisy, :plain, or a PhlexForms::Theme instance.
-    # Defaults to daisy when the daisyui gem is loaded, plain otherwise.
+    # Defaults to daisy.
     attr_writer :theme
 
     def theme
-      @theme ||= defined?(DaisyUI) ? Theme.daisy : Theme.plain
+      @theme ||= Theme.daisy
     end
 
     def infer_from_model

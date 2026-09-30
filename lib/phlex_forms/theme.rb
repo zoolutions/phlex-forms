@@ -9,8 +9,7 @@ module PhlexForms
   # visual variant nor an error state.
   #
   # Built-ins:
-  #   Theme.daisy — the DaisyUI-delegating Forms::* leaves (default when the
-  #                 daisyui gem is loaded)
+  #   Theme.daisy — the DaisyUI-delegating Forms::* leaves (the default)
   #   Theme.plain — bare semantic HTML (Forms::Plain::*): variants accepted and
   #                 ignored, zero styling classes, aria/data hooks only
   #
@@ -47,12 +46,6 @@ module PhlexForms
       end
 
       def daisy
-        unless defined?(DaisyUI)
-          raise PhlexForms::FeatureUnavailable,
-            "the daisy theme requires the daisyui gem. Add `gem \"daisyui\"` to your " \
-            "Gemfile, or use the plain theme."
-        end
-
         @daisy ||= new({
           input: Forms::Input, select: Forms::Select, choices_select: Forms::ChoicesSelect,
           textarea: Forms::Textarea, rich_textarea: Forms::RichTextarea,

@@ -44,20 +44,19 @@ Gem::Specification.new do |s|
   s.required_ruby_version = ">= 3.4"
 
   s.add_dependency "activesupport", ">= 7.0", "< 9"
+  s.add_dependency "daisyui", "~> 2.0"
   s.add_dependency "glyphs", ">= 0.2.0", "< 1"
   s.add_dependency "phlex", "~> 2.0", ">= 2.0.0"
   s.add_dependency "zeitwerk", "~> 2.6"
 
-  # NOTE: `daisyui` is a SOFT dependency (not declared here). When it is loaded
-  # the daisy theme is the default; without it the Plain theme (bare semantic
-  # HTML) takes over, so phlex-forms works in non-daisyui projects without
-  # pulling in a UI kit they never render.
+  # NOTE: `daisyui` is a hard dependency: the daisy theme is the default, and
+  # every component merges classes through DaisyUI::ClassMerge (later conflicting
+  # classes win). The Plain theme still renders bare semantic HTML.
 
   # NOTE: `glyphs` ships as a dependency so `PhlexForms::Configuration
   # .glyphs_renderer` works out of the box, but it is NOT the default renderer:
   # rails_icons resolves SVGs from the host app's asset tree, so the default is a
   # self-contained inline SVG and glyphs is opt-in via PhlexForms.configure.
-  # No tailwind_merge dependency: daisyui modifier conflicts are resolved by
-  # PhlexForms::ClassMerge (last-one-wins), and form fields do not receive
-  # conflicting core Tailwind utilities.
+  # No tailwind_merge dependency: DaisyUI::ClassMerge (a port of tailwind_merge
+  # with daisyUI's modifier groups) resolves class conflicts.
 end

@@ -42,7 +42,7 @@ module Forms
     def control_classes
       base = %w[form-control w-full]
       base << "flex flex-row items-center gap-4" if @modifiers.include?(:horizontal)
-      PhlexForms::ClassMerge.merge(base.join(" "), @options[:class])
+      DaisyUI::ClassMerge.merge(base.join(" "), @options[:class])
     end
   end
 end

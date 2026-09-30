@@ -21,14 +21,13 @@ class Views::Docs::Pages::Installation < DocsUI::Page
     DocsUI::Section("Add the gem", description: "In your app's Gemfile.") do
       DocsUI::Code(<<~'RUBY', filename: "Gemfile")
         gem "phlex-forms"
-        gem "daisyui"        # optional — the daisy theme; omit for plain semantic HTML
-        gem "phlex-reactive" # optional — `live` server-truth validation
+                gem "phlex-reactive" # optional — `live` server-truth validation
       RUBY
       md <<~'MD'
-        Hard dependencies are just `phlex` (~> 2.0), `activesupport`, `zeitwerk`,
-        and `glyphs`. Both companions are **soft**: with `daisyui` loaded the
-        daisy theme is the default; without it the
-        [Plain theme](/docs/theming) takes over. `phlex-reactive` only gates the
+        Hard dependencies are `phlex` (~> 2.0), `daisyui` (~> 2.0),
+        `activesupport`, `zeitwerk`, and `glyphs`. The daisy theme is the
+        default; switch to the [Plain theme](/docs/theming) for unstyled
+        semantic HTML. `phlex-reactive` is **soft**: it only gates the
         [`live` macro](/docs/live-validation).
       MD
     end

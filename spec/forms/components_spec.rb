@@ -59,6 +59,18 @@ describe "Forms components" do
     end
   end
 
+  describe "caller class vs hint/error defaults" do
+    it "lets a caller's size and spacing replace the hint defaults" do
+      output = render_component(Forms::FieldHint.new(text: "No spam", class: "text-xs mt-2"))
+      expect(output).to include('class="text-base-content/60 text-xs mt-2"')
+    end
+
+    it "lets a caller's size replace the error default and keeps the error color" do
+      output = render_component(Forms::FieldError.new(message: "is invalid", class: "text-xs"))
+      expect(output).to include('class="text-error mt-1 text-xs"')
+    end
+  end
+
   describe "Radio (issue #13)" do
     it "keeps each radio's own value instead of the model's current value" do
       # field_attributes carries value: field_value; splatted after the explicit

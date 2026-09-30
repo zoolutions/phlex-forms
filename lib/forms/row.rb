@@ -28,7 +28,7 @@ module Forms
 
     def row_classes
       base = ["grid grid-cols-1 gap-4", COLUMN_CLASSES[@columns]].compact.join(" ")
-      PhlexForms::ClassMerge.merge(base, @options[:class])
+      DaisyUI::ClassMerge.merge(base, @options[:class])
     end
   end
 end

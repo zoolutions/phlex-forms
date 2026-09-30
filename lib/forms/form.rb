@@ -227,7 +227,7 @@ module Forms
       classes = []
       classes << "space-y-4" if @base_modifiers.include?(:spaced)
       classes << "space-y-6" if @base_modifiers.include?(:spacious)
-      PhlexForms::ClassMerge.merge(classes.join(" "), @options[:class]).presence
+      DaisyUI::ClassMerge.merge(classes.join(" "), @options[:class]).presence
     end
 
     def authenticity_token_field

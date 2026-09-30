@@ -44,7 +44,7 @@ module Forms
       a = {
         name: select_name,
         id: @id,
-        class: PhlexForms::ClassMerge.merge("choices-select w-full", @options[:class]),
+        class: DaisyUI::ClassMerge.merge("choices-select w-full", @options[:class]),
         data: stimulus_data,
         **@options.except(:class, :value, :data)
       }

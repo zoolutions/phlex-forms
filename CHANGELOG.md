@@ -7,6 +7,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Upgrading to 0.4
+
+phlex-forms now depends on **daisyui `~> 2.0`** and merges every default +
+caller `class:` through `DaisyUI::ClassMerge` (a port of tailwind_merge 1.5.6
+plus daisyUI's modifier groups). `PhlexForms::ClassMerge` is gone.
+
+- **Bundle daisyui 2.** It's a hard dependency now, so a `gem "daisyui", "~> 1.x"`
+  pin in your Gemfile must move to 2.x (or be dropped).
+- **Register your custom Tailwind utilities.** The old merger only knew daisy
+  sizes/colors and `w-*`, and passed everything else through. The new one
+  classifies every utility, so an unregistered custom one can be dropped as a
+  conflict. For example, a `text-h1` you pass next to `FieldError`'s
+  `text-error` reads as a colour:
+
+  ```ruby
+  # config/initializers/daisy_ui.rb
+  DaisyUI.configure do |config|
+    config.class_merge.utility("text-h1", like: "text-lg")
+  end
+  ```
+
+- **More conflicts resolve now.** A caller's `mt-4` / `text-xs` replaces a
+  component's default `mt-1` / `text-sm` instead of stacking beside it.
+- `DaisyUI.configure { |c| c.class_merge.enabled = false }` turns off merging
+  inside daisyui's own components only. phlex-forms keeps merging its defaults
+  with your `class:`, as it always has.
+
+### Removed
+
+- **`PhlexForms::ClassMerge`**: use `DaisyUI::ClassMerge.merge`.
+- **The daisyui soft-dependency path.** `require "phlex_forms"` loads daisyui
+  unconditionally, the daisy theme is always the default, and `Theme.daisy` no
+  longer raises `FeatureUnavailable`. The Plain theme is unchanged and still
+  emits zero daisy classes.
+
 ### Fixed
 
 - **`rich_textarea` forwards its block into `<lexxy-editor>`**: Lexxy configures

@@ -67,22 +67,23 @@ input(class: "input input-bordered w-full")
 input(class: "input input-#{size} #{state}")
 ```
 
-Mutually-exclusive daisy families (size, color) are resolved by
-`PhlexForms::ClassMerge` (last token in a family wins) — not by string surgery
-and not by pulling in `tailwind_merge`.
+Conflicting classes (daisy sizes/colors, Tailwind utilities like `w-*`, `mt-*`,
+`text-sm`) are resolved by `DaisyUI::ClassMerge.merge(default, @options[:class])`
+(later conflicting classes win) — not by string surgery and not by pulling in
+`tailwind_merge`.
 
-### Soft dependencies: require-rescue-LoadError + Zeitwerk ignore
+### Soft dependency: phlex-reactive (require-rescue-LoadError + Zeitwerk ignore)
 
-Both `daisyui` and `phlex-reactive` are optional. Load them with a rescued
-`require`, and ignore their dependent files in the Zeitwerk loader so the gem
-boots without them:
+`daisyui ~> 2.0` is a hard dependency (required unconditionally). `phlex-reactive`
+is optional. Load it with a rescued `require`, and ignore its dependent files in
+the Zeitwerk loader so the gem boots without it:
 
 ```ruby
-# Good: soft dep — the Plain theme takes over when daisyui is absent
+# Good: soft dep — the `live` macro raises FeatureUnavailable when it's absent
 begin
-  require "daisy_ui"
+  require "phlex/reactive"
 rescue LoadError
-  # no daisyui -> Theme.plain is the default; Theme.daisy raises FeatureUnavailable
+  # no phlex-reactive -> live/tag_field files are ignored below
 end
 
 # The live-validation layer includes Phlex::Reactive::Component at class level,
@@ -92,8 +93,7 @@ unless defined?(Phlex::Reactive)
   loader.ignore("#{__dir__}/forms/live")
 end
 
-# Bad: a hard `require "daisy_ui"` at the top, or referencing Phlex::Reactive
-# unguarded (LoadError/NameError in a plain-theme or non-reactive host)
+# Bad: referencing Phlex::Reactive unguarded (NameError in a non-reactive host)
 ```
 
 ### Delegate daisy leaves to the daisyui gem via `DelegatedField`
@@ -119,6 +119,7 @@ Before marking work complete:
 - [ ] No deep nesting (>4 levels)
 - [ ] Every model touch is `respond_to?`-guarded and rescues to a safe default (POROs degrade)
 - [ ] Class strings are literal and scanner-visible — no interpolation
-- [ ] daisyui / phlex-reactive stay soft deps (require-rescue-LoadError + Zeitwerk ignore)
+- [ ] phlex-reactive stays a soft dep (require-rescue-LoadError + Zeitwerk ignore)
+- [ ] Default + caller classes merge via `DaisyUI::ClassMerge.merge`
 - [ ] Daisy leaves delegate to the daisyui gem via `DelegatedField`; a Plain twin exists
 - [ ] `bundle exec rubocop lib spec` passes

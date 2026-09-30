@@ -26,11 +26,10 @@ class Views::Docs::Pages::Theming < DocsUI::Page
         signatures (`*modifiers, name:, id:, value:, error:, required:, …`) —
         so the same form class renders under any theme.
 
-        With the `daisyui` gem loaded, the **daisy theme** is the default: every
-        leaf delegates its markup and variant stacking to a real daisyUI
-        component. Without it, the **Plain theme** takes over automatically.
-        `daisyui` is a soft dependency — a non-daisyUI project never installs a
-        UI kit it doesn't render.
+        The **daisy theme** is the default: every leaf delegates its markup and
+        variant stacking to a real daisyUI component. The **Plain theme**
+        renders the same form with no daisyUI classes, for a project that
+        doesn't ship daisyUI's CSS.
       MD
     end
   end
@@ -68,8 +67,6 @@ class Views::Docs::Pages::Theming < DocsUI::Page
       RUBY
       md <<~'MD'
         `theme:` accepts `:daisy`, `:plain`, or a `PhlexForms::Theme` instance.
-        Asking for `:daisy` without the daisyui gem raises a clear
-        `FeatureUnavailable`.
       MD
     end
   end

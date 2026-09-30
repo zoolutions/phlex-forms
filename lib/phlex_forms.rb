@@ -7,14 +7,7 @@ require "active_support/core_ext/string" # underscore/pluralize/humanize (scope/
 require "phlex"
 require "glyphs"
 require "zeitwerk"
-
-begin
-  require "daisy_ui"
-rescue LoadError
-  # daisyui is a soft dependency: without it the Plain theme is the default.
-  # The daisy leaf components only reference DaisyUI inside view_template, so
-  # they load fine — they just must not be rendered (Theme.daisy raises).
-end
+require "daisy_ui"
 
 begin
   require "phlex/reactive"
@@ -75,7 +68,7 @@ loader.inflector.inflect(
 )
 
 # Two sibling (non-nested) autoload roots:
-#   lib/phlex_forms -> PhlexForms::  (gem internals: config, class_merge, ...)
+#   lib/phlex_forms -> PhlexForms::  (gem internals: config, inference, theme, ...)
 #   lib/forms       -> Forms::        (the component kit)
 # Keeping them as separate top-level dirs avoids the ambiguity of nesting one
 # namespace root inside another.
