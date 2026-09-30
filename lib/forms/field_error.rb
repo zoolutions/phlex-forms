@@ -20,7 +20,7 @@ module Forms
     private
 
     def classes
-      PhlexForms::ClassMerge.merge("text-error text-sm mt-1", @options[:class])
+      DaisyUI::ClassMerge.merge("text-error text-sm mt-1", @options[:class])
     end
   end
 end

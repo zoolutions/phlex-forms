@@ -17,7 +17,7 @@ theme fallback, plus optional server-truth live validation over
 
 - **Ruby**: >= 3.4 (aligns with the optional phlex-reactive live integration)
 - **Rendering**: Phlex 2 — components live under `Forms::`, internals under `PhlexForms::`
-- **Styling**: daisyUI (soft dependency) — leaf components delegate markup + variants to the `daisyui` gem
+- **Styling**: daisyUI via the `daisyui` gem (`~> 2.0`, a hard dependency) — leaf components delegate markup + variants to it, and every component merges classes through `DaisyUI::ClassMerge`
 - **Type inference**: `PhlexForms::Inference` reads columns / enums / associations / validators
 - **Live validation**: `Forms::Live` over phlex-reactive (soft dependency)
 - **Autoloading**: zeitwerk (two roots: `lib/forms` → `Forms::`, `lib/phlex_forms` → `PhlexForms::`)
@@ -31,10 +31,11 @@ theme fallback, plus optional server-truth live validation over
 1. **NO hardcoded component classes** — leaf components resolve through `PhlexForms::Theme` (role → class), so the same form renders daisy or Plain. Don't reference `Forms::Input` directly where a theme role belongs.
 2. **NO interpolated Tailwind/daisy class strings** — write literal class strings (`"input input-primary"`, never `"input-#{x}"`); the host's Tailwind scanner can't see a built name, so the style never ships.
 3. **NO unguarded model introspection** — every model touch sits behind `respond_to?` guards + a `StandardError` rescue (see `Forms::Field#required?`, `PhlexForms::Inference`), so plain objects / Structs / untyped ActiveModel degrade to the name map. Inference must never require ActiveRecord.
-4. **NO hard dependency on daisyui or phlex-reactive** — both are soft: `require`-rescue-`LoadError` + Zeitwerk `ignore` of the files that reference them. The gem must boot and render (Plain theme) without either.
+4. **NO hard dependency on phlex-reactive** — it is soft: `require`-rescue-`LoadError` + Zeitwerk `ignore` of the files that reference it. The gem must boot and render without it. (`daisyui ~> 2.0` IS a hard dependency, for `DaisyUI::ClassMerge`; the Plain theme still emits zero daisy classes.)
 5. **NO `raw`/`html_safe` on user/model data** — let Phlex escape; only gem-authored trusted markup may bypass it. Field names, choices, values are user-influenced.
 6. **NO caller options silently lost** — in `field`, explicit `as:`/`choices:`/caller kwargs always win over inferred attributes.
 7. **NO manual `gem push`** — release via `bin/release` (patch/minor/major/explicit; wraps `rake release[X.Y.Z]` in `rakelib/release.rake`, which bumps the version file + the `phlex-forms` pin in every tracked lockfile (docs/Gemfile.lock; the gem root `Gemfile.lock` is gitignored, correct for a library gem). The release files are the zoolutions release kit — never edit them here; change docs-kit and `script/release-kit sync`).
+8. **NO hand-rolled class merging** — lean on daisyui's merger (later conflicting classes win). Passing `class:` to a `DaisyUI::*` component? Just pass it (default first): `DaisyUI::Base` merges. Rendering a raw element (`div`/`p`/`form`)? Use `DaisyUI::ClassMerge.merge(default, @options[:class])`. Never add `tailwind_merge`.
 
 ### Always Do
 1. **TDD**: write tests BEFORE implementation (RED → GREEN → REFACTOR).
@@ -94,8 +95,8 @@ Layer 0: Config + engine    lib/phlex_forms/configuration.rb (theme/infer_from_m
 > class renders daisy or Plain by swapping a theme; live validation runs the
 > real ActiveModel validators server-side.
 
-Everything is additive and degrades: no ActiveRecord? name-map inference. No
-daisyui? Plain theme. No phlex-reactive? the `live` macro raises a clear
+Everything is additive and degrades: no ActiveRecord? name-map inference. Not
+using daisyUI's CSS? Plain theme. No phlex-reactive? the `live` macro raises a clear
 `FeatureUnavailable` and the Stimulus `validate: true` fallback still works.
 
 ## Model tiers (for Claude Code commands & agents)

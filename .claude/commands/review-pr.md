@@ -24,7 +24,7 @@ New field type bypasses inference          -> Wire into PhlexForms::Inference (r
 Interpolated Tailwind/daisy class          -> Literal, scanner-visible class strings (no #{...})
 Component doesn't honor the Plain theme    -> Must render under BOTH :daisy and :plain
 Model touch with no respond_to? guard      -> Inference/#required? must degrade for POROs (rescue StandardError -> nil)
-Hard require of daisyui / phlex-reactive   -> Soft dep: require-rescue-LoadError + Zeitwerk ignore
+Hard require of phlex-reactive             -> Soft dep: require-rescue-LoadError + Zeitwerk ignore
 Reimplementing a daisy leaf's markup       -> Delegate to the daisyui gem via DelegatedField
 raw()/html_safe on model/param free text   -> Let Phlex escape text
 Manual gem push                            -> bin/release (CI publishes)

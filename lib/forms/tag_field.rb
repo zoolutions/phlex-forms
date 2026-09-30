@@ -135,6 +135,6 @@ module Forms
     def option_classes = nil
     def chip_classes = "badge badge-primary gap-1"
     def remove_classes = "cursor-pointer"
-    def input_classes = PhlexForms::ClassMerge.merge("input w-full", @attributes[:class])
+    def input_classes = DaisyUI::ClassMerge.merge("input w-full", @attributes[:class])
   end
 end

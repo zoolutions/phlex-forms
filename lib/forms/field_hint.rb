@@ -18,7 +18,7 @@ module Forms
     private
 
     def classes
-      PhlexForms::ClassMerge.merge("text-base-content/60 text-sm mt-1", @options[:class])
+      DaisyUI::ClassMerge.merge("text-base-content/60 text-sm mt-1", @options[:class])
     end
   end
 end

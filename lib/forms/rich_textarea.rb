@@ -70,7 +70,7 @@ module Forms
     end
 
     def editor_classes
-      [@options[:class], "lexxy-content"].compact.join(" ")
+      DaisyUI::ClassMerge.merge(@options[:class], "lexxy-content")
     end
   end
 end

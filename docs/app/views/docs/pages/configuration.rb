@@ -19,7 +19,7 @@ class Views::Docs::Pages::Configuration < DocsUI::Page
     DocsUI::Section("PhlexForms.configure") do
       DocsUI::Code(<<~'RUBY', filename: "config/initializers/phlex_forms.rb")
         PhlexForms.configure do |c|
-          c.theme            = :plain          # :daisy (default when daisyui is loaded), :plain, or a Theme
+          c.theme            = :plain          # :daisy (default), :plain, or a Theme
           c.infer_from_model = true            # the model-driven inference kill switch
           c.field_variants   = [:primary]      # global variants under every field's input
           c.icon_renderer    = PhlexForms::Configuration.glyphs_renderer
@@ -36,7 +36,7 @@ class Views::Docs::Pages::Configuration < DocsUI::Page
       DocsUI::Table(
         [ "Knob", "Default", "Effect" ],
         [
-          [ [ :code, "theme" ], "daisy when daisyui is loaded, else plain",
+          [ [ :code, "theme" ], "daisy",
            "The default theme. Accepts :daisy, :plain, or a PhlexForms::Theme instance. Per-form theme: and form_options theme: override it." ],
           [ [ :code, "infer_from_model" ], "true",
            "Gates structure/column/validator inference. false restores pure attribute-name inference — the pre-inference rendering." ],

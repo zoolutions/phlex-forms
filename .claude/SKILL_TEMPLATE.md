@@ -40,7 +40,7 @@ allowed-tools: {optional — narrow the tool allowlist, e.g. Bash(gh pr view:*),
 - **Route field types through inference** — new input types wire into `PhlexForms::Inference`'s precedence, not ad-hoc branches.
 - **Resolve classes through the theme** — components render under BOTH `:daisy` and `:plain`; no hardcoded class strings, and every daisy leaf needs a `Forms::Plain::*` twin.
 - **Literal class strings** — Tailwind/daisy classes are scanner-visible; never interpolate.
-- **daisyui and phlex-reactive are soft deps** — capability-gate each (require-rescue-LoadError + Zeitwerk ignore); phlex-reactive backs only `Forms::Live`.
+- **phlex-reactive is a soft dep** — capability-gate it (require-rescue-LoadError + Zeitwerk ignore); it backs only `Forms::Live` and the tag field. `daisyui ~> 2.0` is a hard dep (class merging via `DaisyUI::ClassMerge`).
 
 ## Verification
 

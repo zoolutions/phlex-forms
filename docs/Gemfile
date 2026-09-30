@@ -13,8 +13,8 @@ gem "rouge"
 # — e.g. the interactive tag_field on /docs/tag-fields.
 gem "phlex-forms", path: ".."
 
-# Soft deps of phlex-forms, loaded here so the live docs examples render with
-# full styling (daisyui, already above) and the client-only tag/live behavior
+# phlex-reactive is a soft dep of phlex-forms, loaded here so the live docs
+# examples get the client-only tag/live behavior
 # (phlex-reactive >= 0.12.2 ships the reactive_tags(name:)/reactive_filter(input:)
 # escape hatches the tag_field's instance-dynamic wire name uses — issue #6).
 gem "phlex-reactive", ">= 0.12.2"

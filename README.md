@@ -42,7 +42,6 @@ end
 ```ruby
 # Gemfile
 gem "phlex-forms"
-gem "daisyui"        # optional — the daisy theme; omit for plain semantic HTML
 gem "phlex-reactive" # optional — the `live` server-truth validation
 ```
 
@@ -254,11 +253,10 @@ f.field(:search).wrapped_input(:primary) do
 end
 ```
 
-## Themes — using phlex-forms without daisyui
+## Themes — using phlex-forms without daisyUI styling
 
-Every component resolves through a theme (a role → component-class map). With
-the daisyui gem loaded, the daisy theme is the default. Without it — or on
-demand — the **Plain theme** renders bare semantic HTML: the same binding
+Every component resolves through a theme (a role → component-class map). The
+daisy theme is the default. On demand, the **Plain theme** renders bare semantic HTML: the same binding
 (names, ids, values, required, errors), variants accepted and ignored, no
 styling classes, and stable hooks (`aria-invalid`, `role="alert"`,
 `data-field-error`, `data-field-hint`, `data-form-row`) for your own CSS.

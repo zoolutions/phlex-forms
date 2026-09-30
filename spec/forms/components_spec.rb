@@ -53,9 +53,40 @@ describe "Forms components" do
       expect(output).to match(/class="[^"]*w-full[^"]*min-w-32[^"]*"/)
     end
 
+    it "emits a clean default width when daisyui class merging is disabled" do
+      DaisyUI.configure { |c| c.class_merge.enabled = false }
+      output = render_component(Forms::Input.new(name: "email"))
+      expect(output).to include('class="input w-full"')
+    ensure
+      DaisyUI.configure { |c| c.class_merge.enabled = true }
+    end
+
     it "emits no width at all with full_width: false" do
       output = render_component(Forms::Input.new(name: "email", full_width: false))
       expect(output).not_to include("w-full")
+    end
+  end
+
+  describe "caller class vs hint/error defaults" do
+    it "lets a caller's size and spacing replace the hint defaults" do
+      output = render_component(Forms::FieldHint.new(text: "No spam", class: "text-xs mt-2"))
+      expect(output).to include('class="text-base-content/60 text-xs mt-2"')
+    end
+
+    it "lets a caller's size replace the error default and keeps the error color" do
+      output = render_component(Forms::FieldError.new(message: "is invalid", class: "text-xs"))
+      expect(output).to include('class="text-error mt-1 text-xs"')
+    end
+
+    it "keeps the checkbox base class when a collection checkbox gets a caller class" do
+      output = render_component(Forms::CollectionCheckBox.new(name: "tags[]", id: "t1", value: "1", checked: false,
+        class: "checkbox-primary"))
+      expect(output).to include('class="checkbox checkbox-primary"')
+    end
+
+    it "appends lexxy-content to a rich textarea's caller class" do
+      expect(Forms::RichTextarea.new(name: "post[body]", class: "min-h-40").send(:editor_classes))
+        .to eq("min-h-40 lexxy-content")
     end
   end
 

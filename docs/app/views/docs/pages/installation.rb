@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
 # Getting phlex-forms into an app: the gem, the kit include, and the optional
-# companions (daisyui, phlex-reactive, Stimulus controllers).
+# companions (phlex-reactive, Stimulus controllers).
 class Views::Docs::Pages::Installation < DocsUI::Page
   title "Installation"
   eyebrow "Getting started"
 
-  def lead = "Add the gem, include the kit, and pick your optional companions."
+  def lead = "Add the gem, include the kit, and pick your optional companion."
 
   def content
     add_the_gem
@@ -21,14 +21,13 @@ class Views::Docs::Pages::Installation < DocsUI::Page
     DocsUI::Section("Add the gem", description: "In your app's Gemfile.") do
       DocsUI::Code(<<~'RUBY', filename: "Gemfile")
         gem "phlex-forms"
-        gem "daisyui"        # optional — the daisy theme; omit for plain semantic HTML
         gem "phlex-reactive" # optional — `live` server-truth validation
       RUBY
       md <<~'MD'
-        Hard dependencies are just `phlex` (~> 2.0), `activesupport`, `zeitwerk`,
-        and `glyphs`. Both companions are **soft**: with `daisyui` loaded the
-        daisy theme is the default; without it the
-        [Plain theme](/docs/theming) takes over. `phlex-reactive` only gates the
+        Hard dependencies are `phlex ~> 2.0`, `daisyui ~> 2.0`,
+        `activesupport`, `zeitwerk`, and `glyphs`. The daisy theme is the
+        default; switch to the [Plain theme](/docs/theming) for unstyled
+        semantic HTML. `phlex-reactive` is **soft**: it only gates the
         [`live` macro](/docs/live-validation).
       MD
     end

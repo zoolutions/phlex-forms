@@ -16,7 +16,7 @@ are exercised end-to-end by rendering a real form. Cheapest first:
 
 | Layer | Path | Boots | Use for |
 |-------|------|-------|---------|
-| Unit | `spec/phlex_forms/**` | nothing | `PhlexForms::Inference` (precedence), `Configuration` (knobs), `Theme`, `ClassMerge` |
+| Unit | `spec/phlex_forms/**` | nothing | `PhlexForms::Inference` (precedence), `Configuration` (knobs), `Theme` |
 | Integration | `spec/forms/**` | a Phlex kit context (no Rails request) | that a rendered form emits the expected markup for a bound model |
 | Cops | `spec/rubocop/cops_spec.rb` | RuboCop against source snippets | the `RawForm` / `LegacyFormMethod` cops flag and autocorrect |
 
