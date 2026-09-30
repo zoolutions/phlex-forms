@@ -279,7 +279,10 @@ describe Forms::Form do
     it "puts call-site modifiers after form-level variants so they win the stack" do
       output = render_form(user, field_variants: [:sm]) { |f| f.field(:email, :lg) }
 
-      expect(output.index("input-sm")).to be < output.index("input-lg")
+      # daisyui 1.x joins both sizes (sm before lg); 2.x merges the conflict
+      # down to lg. Either way, the last size class on the input is the winner.
+      sizes = output[/<input[^>]*class="([^"]*)"/, 1].split.grep(/\Ainput-(xs|sm|md|lg|xl)\z/)
+      expect(sizes.last).to eq("input-lg")
     end
 
     it "applies globally configured variants beneath form-level ones" do
