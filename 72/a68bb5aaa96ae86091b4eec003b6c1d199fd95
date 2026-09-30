@@ -1,0 +1,38 @@
+docs/app/views/docs/pages/installation.rb
+  s_99b9fb06229312::t_517b1014fd8e63 4,9
+spec/forms/components_spec.rb
+  s_99b9fb06229312::t_c1933e0c5e2f21 75
+  s_99b9fb06229312::t_99332f05f3e7ee 72-74,76-82
+docs/app/views/docs/pages/overview.rb
+  s_99b9fb06229312::t_517b1014fd8e63 96
+lib/forms/form.rb
+  s_99b9fb06229312::t_b989aa9c8976ad 227-229
+lib/forms/form_control.rb
+  s_99b9fb06229312::t_b989aa9c8976ad 43-44
+CHANGELOG.md
+  s_99b9fb06229312::t_517b1014fd8e63 40-45
+lib/forms/row.rb
+  s_99b9fb06229312::t_b989aa9c8976ad 30
+lib/phlex_forms/delegated_field.rb
+  s_99b9fb06229312::t_b989aa9c8976ad 45-46,50
+lib/forms/collection_check_box.rb
+  s_99b9fb06229312::t_517b1014fd8e63 21
+lib/forms/rich_textarea.rb
+  s_99b9fb06229312::t_517b1014fd8e63 73
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "72a68bb5aaa96ae86091b4eec003b6c1d199fd95",
+  "prompts": {},
+  "sessions": {
+    "s_99b9fb06229312": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "968a2063-f6ee-4819-bebd-a5abb44bc0be",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "mhenrixon <mikael@mhenrixon.com>"
+    }
+  }
+}
