@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
 # Getting phlex-forms into an app: the gem, the kit include, and the optional
-# companions (daisyui, phlex-reactive, Stimulus controllers).
+# companions (phlex-reactive, Stimulus controllers).
 class Views::Docs::Pages::Installation < DocsUI::Page
   title "Installation"
   eyebrow "Getting started"
 
-  def lead = "Add the gem, include the kit, and pick your optional companions."
+  def lead = "Add the gem, include the kit, and pick your optional companion."
 
   def content
     add_the_gem

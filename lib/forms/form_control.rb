@@ -40,9 +40,8 @@ module Forms
     private
 
     def control_classes
-      base = %w[form-control w-full]
-      base << "flex flex-row items-center gap-4" if @modifiers.include?(:horizontal)
-      DaisyUI::ClassMerge.merge(base.join(" "), @options[:class])
+      horizontal = "flex flex-row items-center gap-4" if @modifiers.include?(:horizontal)
+      DaisyUI::ClassMerge.merge("form-control w-full", horizontal, @options[:class])
     end
   end
 end

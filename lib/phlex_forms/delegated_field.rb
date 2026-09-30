@@ -42,13 +42,12 @@ module PhlexForms
       attrs.compact
     end
 
-    # The default width goes first so the daisyui component's class merge lets a
-    # caller width (`w-36`) REPLACE it instead of stacking with it (`w-full w-36`
-    # leaves the winner to stylesheet source order — zazu#2934).
+    # Handed to the daisyui component as parts: its class merge lets a caller
+    # width (`w-36`) REPLACE the default instead of stacking with it (zazu#2934).
     def width_class
       return @attributes[:class] unless @full_width
 
-      ["w-full", @attributes[:class]].compact.join(" ")
+      ["w-full", @attributes[:class]]
     end
 
     # Unstyled variant of binding_attributes for the Plain theme: caller classes

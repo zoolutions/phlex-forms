@@ -224,10 +224,9 @@ module Forms
     end
 
     def form_classes
-      classes = []
-      classes << "space-y-4" if @base_modifiers.include?(:spaced)
-      classes << "space-y-6" if @base_modifiers.include?(:spacious)
-      DaisyUI::ClassMerge.merge(classes.join(" "), @options[:class]).presence
+      spaced = "space-y-4" if @base_modifiers.include?(:spaced)
+      spacious = "space-y-6" if @base_modifiers.include?(:spacious)
+      DaisyUI::ClassMerge.merge(spaced, spacious, @options[:class]).presence
     end
 
     def authenticity_token_field

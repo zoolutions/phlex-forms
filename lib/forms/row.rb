@@ -27,8 +27,7 @@ module Forms
     private
 
     def row_classes
-      base = ["grid grid-cols-1 gap-4", COLUMN_CLASSES[@columns]].compact.join(" ")
-      DaisyUI::ClassMerge.merge(base, @options[:class])
+      DaisyUI::ClassMerge.merge("grid grid-cols-1 gap-4", COLUMN_CLASSES[@columns], @options[:class])
     end
   end
 end

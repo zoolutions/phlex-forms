@@ -93,7 +93,7 @@ class Views::Docs::Pages::Overview < DocsUI::Page
   def where_next
     DocsUI::Section("Where next") do
       md <<~'MD'
-        - [Installation](/docs/installation) — the gem and its two optional companions.
+        - [Installation](/docs/installation) — the gem and its optional live-validation companion.
         - [Quick start](/docs/quick-start) — from a model to a live-validating form.
         - [The field API](/docs/field-api) — every option on the primary verb.
         - [Theming](/docs/theming) — daisyUI by default, plain semantic HTML on demand.

@@ -69,6 +69,17 @@ describe "Forms components" do
       output = render_component(Forms::FieldError.new(message: "is invalid", class: "text-xs"))
       expect(output).to include('class="text-error mt-1 text-xs"')
     end
+
+    it "keeps the checkbox base class when a collection checkbox gets a caller class" do
+      output = render_component(Forms::CollectionCheckBox.new(name: "tags[]", id: "t1", value: "1", checked: false,
+        class: "checkbox-primary"))
+      expect(output).to include('class="checkbox checkbox-primary"')
+    end
+
+    it "appends lexxy-content to a rich textarea's caller class" do
+      expect(Forms::RichTextarea.new(name: "post[body]", class: "min-h-40").send(:editor_classes))
+        .to eq("min-h-40 lexxy-content")
+    end
   end
 
   describe "Radio (issue #13)" do

@@ -18,7 +18,7 @@ module Forms
         name: @name,
         id: @id,
         value: @value,
-        class: @options[:class] || "checkbox",
+        class: DaisyUI::ClassMerge.merge("checkbox", @options[:class]),
         checked: @checked || nil
       )
     end

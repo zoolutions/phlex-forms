@@ -37,6 +37,12 @@ plus daisyUI's modifier groups). `PhlexForms::ClassMerge` is gone.
   FormControl, TagField, ChoicesSelect) merge through `DaisyUI::ClassMerge.merge`
   directly, which that switch doesn't affect.
 
+### Fixed
+
+- **`CollectionCheckBox` keeps its `checkbox` class with a caller `class:`.**
+  `class: "checkbox-primary"` used to replace the base class. It now merges
+  with it (`checkbox checkbox-primary`).
+
 ### Removed
 
 - **`PhlexForms::ClassMerge`**: use `DaisyUI::ClassMerge.merge`.
