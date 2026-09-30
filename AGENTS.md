@@ -34,7 +34,7 @@ theme fallback, plus optional server-truth live validation over
 4. **NO hard dependency on daisyui or phlex-reactive** — both are soft: `require`-rescue-`LoadError` + Zeitwerk `ignore` of the files that reference them. The gem must boot and render (Plain theme) without either.
 5. **NO `raw`/`html_safe` on user/model data** — let Phlex escape; only gem-authored trusted markup may bypass it. Field names, choices, values are user-influenced.
 6. **NO caller options silently lost** — in `field`, explicit `as:`/`choices:`/caller kwargs always win over inferred attributes.
-7. **NO manual `gem push`** — release via `bin/release` (patch/minor/major/explicit; wraps `rake release[X.Y.Z]`, which stages ONLY the version file + the docs lockfile pin; the gem root `Gemfile.lock` is gitignored, correct for a library gem).
+7. **NO manual `gem push`** — release via `bin/release` (patch/minor/major/explicit; wraps `rake release[X.Y.Z]` in `rakelib/release.rake`, which bumps the version file + the `phlex-forms` pin in every tracked lockfile (docs/Gemfile.lock; the gem root `Gemfile.lock` is gitignored, correct for a library gem). The release files are the zoolutions release kit — never edit them here; change docs-kit and `script/release-kit sync`).
 
 ### Always Do
 1. **TDD**: write tests BEFORE implementation (RED → GREEN → REFACTOR).
