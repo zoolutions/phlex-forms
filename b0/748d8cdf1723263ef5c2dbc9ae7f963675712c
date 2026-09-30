@@ -1,0 +1,21 @@
+docs/app/views/docs/pages/installation.rb
+  s_99b9fb06229312::t_bd2568e3b7d490 24,27
+docs/Gemfile.lock
+  ai_agent 6,110,112,434
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "b0748d8cdf1723263ef5c2dbc9ae7f963675712c",
+  "prompts": {},
+  "sessions": {
+    "s_99b9fb06229312": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "968a2063-f6ee-4819-bebd-a5abb44bc0be",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "mhenrixon <mikael@mhenrixon.com>"
+    }
+  }
+}
