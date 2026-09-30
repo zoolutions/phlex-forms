@@ -35,7 +35,7 @@ theme fallback, plus optional server-truth live validation over
 5. **NO `raw`/`html_safe` on user/model data** — let Phlex escape; only gem-authored trusted markup may bypass it. Field names, choices, values are user-influenced.
 6. **NO caller options silently lost** — in `field`, explicit `as:`/`choices:`/caller kwargs always win over inferred attributes.
 7. **NO manual `gem push`** — release via `bin/release` (patch/minor/major/explicit; wraps `rake release[X.Y.Z]` in `rakelib/release.rake`, which bumps the version file + the `phlex-forms` pin in every tracked lockfile (docs/Gemfile.lock; the gem root `Gemfile.lock` is gitignored, correct for a library gem). The release files are the zoolutions release kit — never edit them here; change docs-kit and `script/release-kit sync`).
-8. **NO hand-rolled class merging** — merge a default with a caller's `class:` via `DaisyUI::ClassMerge.merge(default, @options[:class])` (later conflicting classes win). Never string-concatenate, and never add `tailwind_merge`.
+8. **NO hand-rolled class merging** — lean on daisyui's merger (later conflicting classes win). Passing `class:` to a `DaisyUI::*` component? Just pass it (default first): `DaisyUI::Base` merges. Rendering a raw element (`div`/`p`/`form`)? Use `DaisyUI::ClassMerge.merge(default, @options[:class])`. Never add `tailwind_merge`.
 
 ### Always Do
 1. **TDD**: write tests BEFORE implementation (RED → GREEN → REFACTOR).

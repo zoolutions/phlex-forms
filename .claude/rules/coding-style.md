@@ -68,9 +68,11 @@ input(class: "input input-#{size} #{state}")
 ```
 
 Conflicting classes (daisy sizes/colors, Tailwind utilities like `w-*`, `mt-*`,
-`text-sm`) are resolved by `DaisyUI::ClassMerge.merge(default, @options[:class])`
-(later conflicting classes win) — not by string surgery and not by pulling in
-`tailwind_merge`.
+`text-sm`) are resolved by daisyui's merger (later conflicting classes win) — not
+by string surgery and not by pulling in `tailwind_merge`. A `class:` handed to a
+`DaisyUI::*` component is merged by `DaisyUI::Base` (put the default first); a
+raw element (`div`/`p`/`form`) merges via
+`DaisyUI::ClassMerge.merge(default, @options[:class])`.
 
 ### Soft dependency: phlex-reactive (require-rescue-LoadError + Zeitwerk ignore)
 
@@ -120,6 +122,6 @@ Before marking work complete:
 - [ ] Every model touch is `respond_to?`-guarded and rescues to a safe default (POROs degrade)
 - [ ] Class strings are literal and scanner-visible — no interpolation
 - [ ] phlex-reactive stays a soft dep (require-rescue-LoadError + Zeitwerk ignore)
-- [ ] Default + caller classes merge via `DaisyUI::ClassMerge.merge`
+- [ ] Default + caller classes merge via daisyui (`DaisyUI::Base` or `DaisyUI::ClassMerge.merge` on raw elements)
 - [ ] Daisy leaves delegate to the daisyui gem via `DelegatedField`; a Plain twin exists
 - [ ] `bundle exec rubocop lib spec` passes

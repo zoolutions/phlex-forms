@@ -30,9 +30,12 @@ plus daisyUI's modifier groups). `PhlexForms::ClassMerge` is gone.
 
 - **More conflicts resolve now.** A caller's `mt-4` / `text-xs` replaces a
   component's default `mt-1` / `text-sm` instead of stacking beside it.
-- `DaisyUI.configure { |c| c.class_merge.enabled = false }` turns off merging
-  inside daisyui's own components only. phlex-forms keeps merging its defaults
-  with your `class:`, as it always has.
+- **Daisy leaves lean on daisyui's own merge.** Input, Select, Textarea and the
+  other delegated leaves hand `class:` to the daisyui component, so
+  `DaisyUI.configure { |c| c.class_merge.enabled = false }` applies to them too.
+  The components that render plain HTML (FieldHint, FieldError, Row, Form,
+  FormControl, TagField, ChoicesSelect) merge through `DaisyUI::ClassMerge.merge`
+  directly, which that switch doesn't affect.
 
 ### Removed
 

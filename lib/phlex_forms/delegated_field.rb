@@ -42,13 +42,13 @@ module PhlexForms
       attrs.compact
     end
 
-    # Merged via DaisyUI::ClassMerge so a caller width (`w-36`) REPLACES the default
-    # instead of stacking with it (`w-full w-36` leaves the winner to stylesheet
-    # source order — that's how admin filter selects went full-width, zazu#2934).
+    # The default width goes first so the daisyui component's class merge lets a
+    # caller width (`w-36`) REPLACE it instead of stacking with it (`w-full w-36`
+    # leaves the winner to stylesheet source order — zazu#2934).
     def width_class
       return @attributes[:class] unless @full_width
 
-      DaisyUI::ClassMerge.merge("w-full", @attributes[:class])
+      ["w-full", @attributes[:class]].compact.join(" ")
     end
 
     # Unstyled variant of binding_attributes for the Plain theme: caller classes
