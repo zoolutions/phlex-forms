@@ -28,6 +28,10 @@ plus daisyUI's modifier groups). `PhlexForms::ClassMerge` is gone.
   end
   ```
 
+- **`CollectionCheckBox` merges a caller `class:` instead of replacing its
+  base class.** `class: "checkbox-primary"` now renders `checkbox
+  checkbox-primary` (it used to drop `checkbox`). A caller who used `class:` to
+  swap the base class entirely (`class: "toggle"`) now gets both classes.
 - **More conflicts resolve now.** A caller's `mt-4` / `text-xs` replaces a
   component's default `mt-1` / `text-sm` instead of stacking beside it.
 - **Daisy leaves lean on daisyui's own merge.** Input, Select, Textarea and the
@@ -36,12 +40,6 @@ plus daisyUI's modifier groups). `PhlexForms::ClassMerge` is gone.
   The components that render plain HTML (FieldHint, FieldError, Row, Form,
   FormControl, TagField, ChoicesSelect) merge through `DaisyUI::ClassMerge.merge`
   directly, which that switch doesn't affect.
-
-### Fixed
-
-- **`CollectionCheckBox` keeps its `checkbox` class with a caller `class:`.**
-  `class: "checkbox-primary"` used to replace the base class. It now merges
-  with it (`checkbox checkbox-primary`).
 
 ### Removed
 

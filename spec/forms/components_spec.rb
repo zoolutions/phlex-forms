@@ -53,6 +53,14 @@ describe "Forms components" do
       expect(output).to match(/class="[^"]*w-full[^"]*min-w-32[^"]*"/)
     end
 
+    it "emits a clean default width when daisyui class merging is disabled" do
+      DaisyUI.configure { |c| c.class_merge.enabled = false }
+      output = render_component(Forms::Input.new(name: "email"))
+      expect(output).to include('class="input w-full"')
+    ensure
+      DaisyUI.configure { |c| c.class_merge.enabled = true }
+    end
+
     it "emits no width at all with full_width: false" do
       output = render_component(Forms::Input.new(name: "email", full_width: false))
       expect(output).not_to include("w-full")

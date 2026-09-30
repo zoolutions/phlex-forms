@@ -47,7 +47,7 @@ module PhlexForms
     def width_class
       return @attributes[:class] unless @full_width
 
-      ["w-full", @attributes[:class]]
+      ["w-full", *@attributes[:class]]
     end
 
     # Unstyled variant of binding_attributes for the Plain theme: caller classes
