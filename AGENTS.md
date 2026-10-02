@@ -167,6 +167,18 @@ gh issue comment <n> --attach ./repro.mp4                       # video renders 
   page. Save under the scratchpad, never in the repo.
 - No `--attach` flag means an old `gh`: `brew upgrade gh`.
 
+## Labels
+
+Every pull request carries exactly one `type` label and at least one `area`
+label from `.github/labels.yml` — never a `status` label. `/plan` labels the
+issue, `/lfg` copies the issue's `type` and `area` labels onto the PR (never
+`plan` or another status label). Without an issue, the type comes from the
+change's conventional-commit prefix and the areas from
+`bin/labels infer $(git diff --name-only origin/main...HEAD)`. Labels change in
+the manifest and reach GitHub with `bin/labels sync`, never through the UI.
+Rules: `.github/LABELS.md`. `bin/labels` + `.github/LABELS.md` are the shared
+labels kit (canonical copy in docs-kit): never edit them in place.
+
 ## Release & docs deploy
 
 - `bin/release [patch|minor|major|X.Y.Z]` (`list` / `--dry-run` / `--force`) computes the next version, shows the commits since the last tag, confirms, then runs `rake release[X.Y.Z]`, which bumps the version, verifies `gem build --strict`, pushes, and creates the GitHub release; CI (`release.yml`) tests, builds, signs (Sigstore), and publishes to RubyGems via trusted publishing.
