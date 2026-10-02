@@ -151,7 +151,6 @@ paths:
   "app/javascript/**/*": validation
   "lib/forms/live.rb": validation
   "lib/forms/{live,validations}/**/*": validation
-  "lib/forms/{live,validations}.rb": validation
   "lib/{phlex_forms,phlex-forms}.rb": core
   "lib/phlex_forms/{configuration,engine}.rb": core
   "config/**/*": core
@@ -162,8 +161,8 @@ paths:
   "spec/forms/*_spec.rb": components
   "spec/forms/plain/**/*": theme
   "spec/forms/live_spec.rb": validation
+  "spec/forms/live_*_spec.rb": validation
   "spec/forms/{live,validations}/**/*": validation
-  "spec/forms/{live,validations}_spec.rb": validation
   "spec/rubocop/**/*": rubocop
   ".github/**/*": devops
   "bin/release": devops
