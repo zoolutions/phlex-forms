@@ -46,6 +46,10 @@ module Forms
         only_integer odd even
       ].freeze
 
+      # LengthValidator's per-case messages; each wins over `message:` on the
+      # server, so the length controller checks them first.
+      LENGTH_MESSAGE_KEYS = %i[too_long too_short wrong_length].freeze
+
       # Convenience: returns a null introspector for nil models so
       # callers don't need to guard.
       def self.for(model_or_class)
@@ -83,7 +87,8 @@ module Forms
           next unless suffix
 
           controllers << "#{CONTROLLER_PREFIX}--#{suffix}"
-          value_attributes(suffix, validator, attribute).each do |key, value|
+          value_attributes(suffix, validator, attribute).merge(message_attrs(suffix, validator, attribute))
+            .each do |key, value|
             attrs[data_key(suffix, key)] = value
           end
         end
@@ -128,6 +133,17 @@ module Forms
         when "confirmation" then confirmation_attrs(attribute)
         when "acceptance" then acceptance_attrs(validator)
         else {}
+        end
+      end
+
+      # `message` (and length's `too_long_message` & co.) values, for the
+      # validator's own `message:` options. Omitted when there is none, or when
+      # it can't be resolved without a record, so the generic message stays.
+      def message_attrs(suffix, validator, attribute)
+        keys = suffix == "length" ? LENGTH_MESSAGE_KEYS + [:message] : [:message]
+        keys.each_with_object({}) do |option, attrs|
+          text = Message.resolve(validator.options[option], model_class:, attribute:)
+          attrs[option == :message ? :message : :"#{option}_message"] = text if text
         end
       end
 

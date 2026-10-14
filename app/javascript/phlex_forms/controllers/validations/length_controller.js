@@ -1,8 +1,9 @@
 import { FieldValidatorController } from "phlex_forms/controllers/validations/base_controller"
-import { t } from "phlex_forms/i18n"
+import { interpolate } from "phlex_forms/i18n"
 
 // Mirrors ActiveModel::Validations::LengthValidator. Reads:
 //   - maximum / minimum / is
+//   - too-long / too-short / wrong-length messages (win over `message`)
 //   - allow-blank / allow-nil
 //
 // Counter is rendered next to the input when `maximum` is set, so
@@ -20,6 +21,9 @@ export default class extends FieldValidatorController {
     maximum: Number,
     minimum: Number,
     is: Number,
+    tooLongMessage: String,
+    tooShortMessage: String,
+    wrongLengthMessage: String,
   }
 
   connect() {
@@ -41,15 +45,22 @@ export default class extends FieldValidatorController {
     const length = this.codepointLength(value)
 
     if (this.hasIsValue && length !== this.isValue) {
-      return t("js.forms.validations.length.wrong_length", { count: this.isValue })
+      return this.lengthMessage(this.wrongLengthMessageValue, "wrong_length", this.isValue)
     }
     if (this.hasMaximumValue && length > this.maximumValue) {
-      return t("js.forms.validations.length.too_long", { count: this.maximumValue })
+      return this.lengthMessage(this.tooLongMessageValue, "too_long", this.maximumValue)
     }
     if (this.hasMinimumValue && length < this.minimumValue) {
-      return t("js.forms.validations.length.too_short", { count: this.minimumValue })
+      return this.lengthMessage(this.tooShortMessageValue, "too_short", this.minimumValue)
     }
     return null
+  }
+
+  // A per-case message (`too_long:` & co.) wins over `message:`, as on the
+  // server; the bundled translation is the final fallback.
+  lengthMessage(caseMessage, key, count) {
+    if (caseMessage) return interpolate(caseMessage, { count })
+    return this.messageOr(`js.forms.validations.length.${key}`, { count })
   }
 
   updateCounter = () => {

@@ -1,5 +1,4 @@
 import { FieldValidatorController } from "phlex_forms/controllers/validations/base_controller"
-import { t } from "phlex_forms/i18n"
 
 // Mirrors ActiveModel::Validations::ConfirmationValidator. Looks
 // for the `<name>_confirmation` field by name within the same form
@@ -15,7 +14,7 @@ export default class extends FieldValidatorController {
     if (!form) return null
     const partner = form.elements[this.matchValue] || this.partnerByAttribute(form)
     if (!partner) return null
-    return String(partner.value) === String(value ?? "") ? null : t("js.forms.validations.confirmation.confirmation")
+    return String(partner.value) === String(value ?? "") ? null : this.messageOr("js.forms.validations.confirmation.confirmation")
   }
 
   partnerByAttribute(form) {

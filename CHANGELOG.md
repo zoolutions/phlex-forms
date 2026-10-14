@@ -51,6 +51,18 @@ plus daisyUI's modifier groups). `PhlexForms::ClassMerge` is gone.
 
 ### Fixed
 
+- **Client-side validators honour the validator's `message:`** (issue #41).
+  `validates :code, format: { with: /\A[a-z]*\z/, message: "lowercase only" }`
+  used to show the generic "is invalid" in the browser and the specific text
+  only after a round trip. The introspector now emits
+  `data-validations--<validator>-message-value`: a String as is (`%{count}`
+  stays for the browser to fill), a Symbol resolved on the server through
+  ActiveModel's lookup chain in the current locale, a Proc skipped (it needs a
+  record). Length's `too_long:` / `too_short:` / `wrong_length:` win over
+  `message:`, as on the server. Every shipped controller prefers the value and
+  falls back to its bundled message; the submit coordinator collects it too. A
+  `validate: { presence: { message: "…" } }` / `confirmation: { message: "…" }`
+  rules hash now keeps its options (it used to collapse them to `true`).
 - **`rich_textarea` forwards its block into `<lexxy-editor>`**: Lexxy configures
   an editor through CHILD elements — `<lexxy-prompt>` for @mentions,
   `<lexxy-code-language-picker>` for code blocks — but the component rendered
