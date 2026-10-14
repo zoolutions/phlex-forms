@@ -6,6 +6,7 @@ Bundler.setup
 require "i18n"
 require "active_model"
 require "phlex-forms"
+require "conformance_kit/rspec"
 require "super_diff/rspec"
 
 # Load the gem's own locale files so I18n.t used inside components resolves in
