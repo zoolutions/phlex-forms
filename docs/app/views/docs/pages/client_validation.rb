@@ -87,7 +87,8 @@ class Views::Docs::Pages::ClientValidation < DocsUI::Page
 
         Length's `too_long:`, `too_short:` and `wrong_length:` win over
         `message:`, as on the server. An inline `validate: { ... }` hash takes
-        the same options.
+        the same options; a Symbol there has no model behind it, so it resolves
+        through `errors.messages.<key>` only, with `%{attribute}` reading "Value".
       MD
       DocsUI::Code(<<~'RUBY')
         validates :code, format: { with: /\A[a-z]*\z/, message: "may only contain lowercase letters" }

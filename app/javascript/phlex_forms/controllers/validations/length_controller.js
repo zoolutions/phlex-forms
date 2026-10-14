@@ -59,7 +59,7 @@ export default class extends FieldValidatorController {
   // A per-case message (`too_long:` & co.) wins over `message:`, as on the
   // server; the bundled translation is the final fallback.
   lengthMessage(caseMessage, key, count) {
-    if (caseMessage) return interpolate(caseMessage, { count })
+    if (caseMessage) return interpolate(caseMessage, { value: this.element.value, count })
     return this.messageOr(`js.forms.validations.length.${key}`, { count })
   }
 

@@ -68,9 +68,11 @@ export class FieldValidatorController extends Controller {
   }
 
   // The validator's own `message:` when the server rendered one, else the
-  // bundled translation for `key`. Either way `%{count}` & co. are filled in.
+  // bundled translation for `key`. Either way `%{count}` & co. are filled in;
+  // a custom message may also carry `%{value}`, as on the server.
   messageOr(key, vars = {}) {
-    return this.hasMessageValue && this.messageValue ? interpolate(this.messageValue, vars) : t(key, vars)
+    if (!(this.hasMessageValue && this.messageValue)) return t(key, vars)
+    return interpolate(this.messageValue, { value: this.element.value, ...vars })
   }
 
   shouldSkip(value) {
