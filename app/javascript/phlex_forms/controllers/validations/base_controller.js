@@ -72,7 +72,7 @@ export class FieldValidatorController extends Controller {
   // a custom message may also carry `%{value}`, as on the server.
   messageOr(key, vars = {}) {
     if (!(this.hasMessageValue && this.messageValue)) return t(key, vars)
-    return interpolate(this.messageValue, { value: this.element.value, ...vars })
+    return interpolate(this.messageValue, { value: this.fieldValue(), ...vars })
   }
 
   shouldSkip(value) {

@@ -79,7 +79,8 @@ class Views::Docs::Pages::ClientValidation < DocsUI::Page
         A validator's own `message:` reaches the browser, so the client shows
         the text the server would add:
 
-        - a **String** is used as is; `%{count}` is filled in client-side.
+        - a **String** is used as is; `%{value}` is filled in client-side, and
+          `%{count}` for rules that have one (length, the numericality bounds).
         - a **Symbol** is resolved on the server through ActiveModel's lookup
           chain (`activemodel.errors.models.<model>.attributes.<attr>.<key>`,
           then `errors.messages.<key>`) in the current locale.

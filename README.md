@@ -346,8 +346,9 @@ resolves to `phlex_forms/controllers/validations/*_controller` — the path the 
 ships them at.
 
 A validator's own `message:` reaches the browser too, so the client shows what
-the server would: a String as is (`%{count}` is filled in), a Symbol resolved
-on the server through your app's i18n, a Proc skipped (it needs a record).
+the server would: a String as is (`%{value}` is filled in, and `%{count}` for
+rules that have one: length and the numericality bounds), a Symbol resolved on
+the server through your app's i18n, a Proc skipped (it needs a record).
 Length's `too_long:` / `too_short:` / `wrong_length:` win over `message:`.
 
 ```ruby

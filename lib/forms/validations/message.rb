@@ -7,9 +7,13 @@ module Forms
     #
     #   - a String is emitted as is; `%{count}`-style placeholders stay in place
     #     for the Stimulus controller to fill, as it does for its own messages.
+    #     A blank String resolves to nil: the browser reads "" as valid.
     #   - a Symbol is resolved on the server through ActiveModel's lookup chain
     #     (`<scope>.errors.models.<model>.attributes.<attr>.<key>` ... then
-    #     `errors.messages.<key>`), in the current locale.
+    #     `errors.messages.<key>`), in the current locale. With a known `count:`
+    #     (length's per-case messages) it is passed to I18n, so a pluralised
+    #     translation picks the right form; otherwise `%{count}` stays a
+    #     placeholder and the plural `:other` form is used.
     #   - anything else (a Proc needs a record) resolves to nil, so the
     #     controller keeps its generic message.
     #
@@ -19,10 +23,10 @@ module Forms
       # Interpolations the browser fills in, kept as literal placeholders.
       PLACEHOLDERS = { count: "%{count}", value: "%{value}" }.freeze
 
-      def self.resolve(message, model_class:, attribute:)
+      def self.resolve(message, model_class:, attribute:, count: nil)
         case message
-        when String then message
-        when Symbol then new(model_class, attribute).translate(message)
+        when String then message unless message.empty?
+        when Symbol then new(model_class, attribute).translate(message, count:)
         end
       end
 
@@ -31,11 +35,13 @@ module Forms
         @attribute = attribute.to_s
       end
 
-      def translate(key)
+      def translate(key, count: nil)
         return unless defined?(I18n)
 
         first, *rest = lookup_keys(key)
-        I18n.translate(first, **interpolations, default: rest, raise: true)
+        vars = interpolations
+        vars[:count] = count unless count.nil?
+        I18n.translate(first, **vars, default: rest, raise: true)
       rescue StandardError
         nil
       end

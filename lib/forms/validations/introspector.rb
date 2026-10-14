@@ -47,8 +47,9 @@ module Forms
       ].freeze
 
       # LengthValidator's per-case messages; each wins over `message:` on the
-      # server, so the length controller checks them first.
-      LENGTH_MESSAGE_KEYS = %i[too_long too_short wrong_length].freeze
+      # server, so the length controller checks them first. Each maps to the
+      # bound it reports, so a Symbol resolves with that count.
+      LENGTH_MESSAGE_KEYS = { too_long: :maximum, too_short: :minimum, wrong_length: :is }.freeze
 
       # Convenience: returns a null introspector for nil models so
       # callers don't need to guard.
@@ -140,11 +141,17 @@ module Forms
       # validator's own `message:` options. Omitted when there is none, or when
       # it can't be resolved without a record, so the generic message stays.
       def message_attrs(suffix, validator, attribute)
-        keys = suffix == "length" ? LENGTH_MESSAGE_KEYS + [:message] : [:message]
-        keys.each_with_object({}) do |option, attrs|
-          text = Message.resolve(validator.options[option], model_class:, attribute:)
+        counts = suffix == "length" ? length_message_counts(validator) : {}
+        options = counts.keys + [:message]
+        options.each_with_object({}) do |option, attrs|
+          text = Message.resolve(validator.options[option], model_class:, attribute:, count: counts[option])
           attrs[option == :message ? :message : :"#{option}_message"] = text if text
         end
+      end
+
+      def length_message_counts(validator)
+        bounds = length_attrs(validator)
+        LENGTH_MESSAGE_KEYS.to_h { |option, bound| [option, bounds[bound]&.to_i] }
       end
 
       def presence_attrs

@@ -82,6 +82,11 @@ describe Forms::Validations::Introspector do
       expect(data[:validations__length_message_value]).to eq("max %{count}")
     end
 
+    it "emits no message value for a blank String (the browser would read it as valid)" do
+      data = data_for(:title) { validates :title, format: { with: /\A[a-z]*\z/, message: "" } }
+      expect(data).not_to have_key(:validations__format_message_value)
+    end
+
     it "emits no message value when the validator declares none" do
       data = data_for(:title) { validates :title, format: { with: /\A[a-z]*\z/ } }
       expect(data).not_to have_key(:validations__format_message_value)
@@ -125,7 +130,8 @@ describe Forms::Validations::Introspector do
       around do |example|
         I18n.backend.store_translations(:en, activemodel: { errors: {
           models: { widget: { attributes: { title: { lowercase: "%{attribute} must be lowercase" } } } },
-          messages: { lowercase: "generic lowercase", too_big: "at most %{count}" }
+          messages: { lowercase: "generic lowercase", too_big: "at most %{count}",
+                      chars: { one: "one char max", other: "%{count} chars max" } }
         } })
         example.run
       ensure
@@ -142,9 +148,20 @@ describe Forms::Validations::Introspector do
         expect(data[:validations__format_message_value]).to eq("generic lowercase")
       end
 
-      it "leaves %{count} in place for the browser to fill" do
-        data = data_for(:title) { validates :title, length: { maximum: 5, too_long: :too_big } }
-        expect(data[:validations__length_too_long_message_value]).to eq("at most %{count}")
+      it "leaves %{count} in place for the browser to fill when the case is ambiguous (message:)" do
+        data = data_for(:title) { validates :title, length: { minimum: 2, maximum: 5, message: :too_big } }
+        expect(data[:validations__length_message_value]).to eq("at most %{count}")
+      end
+
+      it "resolves a length per-case Symbol with that case's real count, picking the plural form" do
+        data = data_for(:title) { validates :title, length: { maximum: 1, minimum: 0, too_long: :chars, too_short: :chars } }
+        expect(data[:validations__length_too_long_message_value]).to eq("one char max")
+        expect(data[:validations__length_too_short_message_value]).to eq("0 chars max")
+      end
+
+      it "uses a range's bounds as the per-case counts" do
+        data = data_for(:title) { validates :title, length: { in: 1..4, too_long: :chars } }
+        expect(data[:validations__length_too_long_message_value]).to eq("4 chars max")
       end
 
       it "resolves in the current locale" do
