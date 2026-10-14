@@ -314,6 +314,20 @@ describe "Forms components" do
       expect(output).to include('data-validations--length-maximum-value="60"')
     end
 
+    it "renders the validator's message: as the controller's message value (issue #41)" do
+      widget = build_model(:widget, code: nil,
+        validations: -> { validates :code, format: { with: /\A[a-z]*\z/, message: "may only contain lowercase letters" } })
+      output = render_form(widget, validate: true) { |f| f.Input(:code) }
+      expect(output).to include('data-validations--format-message-value="may only contain lowercase letters"')
+    end
+
+    it "renders a manual rules hash's message: the same way" do
+      output = render_form(partner) do |f|
+        f.Input(:slug, validate: { format: { with: /\A[a-z]*\z/, message: "lowercase only" } })
+      end
+      expect(output).to include('data-validations--format-message-value="lowercase only"')
+    end
+
     it "opts a field out with validate: false" do
       output = render_form(partner, validate: true) { |f| f.field(:title, validate: false) }
       expect(output).not_to include("validations--presence")

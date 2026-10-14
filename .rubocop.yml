@@ -125,6 +125,10 @@ RSpec/NestedGroups:
 Style/Documentation:
   Enabled: false
 
+# `%{count}` & co. are I18n interpolation placeholders, not format strings.
+Style/FormatStringToken:
+  EnforcedStyle: template
+
 Style/FrozenStringLiteralComment:
   Enabled: true
   EnforcedStyle: always

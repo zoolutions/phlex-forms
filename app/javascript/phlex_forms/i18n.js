@@ -26,7 +26,7 @@ function lookup(scope, locale) {
   return scope.split(".").reduce((node, key) => (node == null ? undefined : node[key]), table)
 }
 
-function interpolate(string, vars) {
+export function interpolate(string, vars = {}) {
   return string.replace(/%\{(\w+)\}/g, (_, key) => (key in vars ? String(vars[key]) : `%{${key}}`))
 }
 

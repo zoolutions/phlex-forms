@@ -1,5 +1,4 @@
 import { FieldValidatorController } from "phlex_forms/controllers/validations/base_controller"
-import { t } from "phlex_forms/i18n"
 
 // Mirrors ActiveModel::Validations::PresenceValidator.
 export default class extends FieldValidatorController {
@@ -9,6 +8,6 @@ export default class extends FieldValidatorController {
 
   check(value) {
     if (!this.requiredValue) return null
-    return this.isBlank(value) ? t("js.forms.validations.presence.blank") : null
+    return this.isBlank(value) ? this.messageOr("js.forms.validations.presence.blank") : null
   }
 }

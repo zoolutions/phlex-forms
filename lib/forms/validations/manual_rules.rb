@@ -13,7 +13,7 @@ module Forms
     #   ManualRules.new(
     #     length: { maximum: 60, minimum: 3 },
     #     presence: true,
-    #     format: { with: /\A[a-z]+\z/i },
+    #     format: { with: /\A[a-z]+\z/i, message: "letters only" },
     #     numericality: { greater_than_or_equal_to: 0 },
     #     inclusion: { in: %w[a b c] },
     #     exclusion: { in: %w[admin] },
@@ -49,7 +49,7 @@ module Forms
           captured_rules.each do |key, opts|
             case key
             when :presence
-              validates :value, presence: true if opts
+              validates :value, presence: opts.is_a?(Hash) ? opts : true if opts
             when :length
               validates :value, length: opts
             when :format
@@ -61,7 +61,7 @@ module Forms
             when :exclusion
               validates :value, exclusion: opts
             when :confirmation
-              validates :value, confirmation: true if opts
+              validates :value, confirmation: opts.is_a?(Hash) ? opts : true if opts
             when :acceptance
               validates :value, acceptance: opts.is_a?(Hash) ? opts : { accept: %w[1 true] }
             end

@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { interpolate, t } from "phlex_forms/i18n"
 
 // Shared base for every field-level validator. Subclasses implement
 // `check(value)` and return either `null` (valid) or a translation
@@ -8,7 +9,8 @@ import { Controller } from "@hotwired/stimulus"
 //
 // Each subclass declares its own `static values` for the rules it
 // reads from data attributes; the base class only knows about the
-// `allowBlank` / `allowNil` short-circuits.
+// `allowBlank` / `allowNil` short-circuits and the `message` value,
+// which carries the validator's own `message:` option (issue #41).
 export class FieldValidatorController extends Controller {
   // `error` is opt-in: callers that pre-render a `<p data-validations--<validator>-target="error">`
   // get a stable slot the controller toggles. Inputs without an
@@ -18,6 +20,7 @@ export class FieldValidatorController extends Controller {
   static values = {
     allowBlank: { type: Boolean, default: false },
     allowNil: { type: Boolean, default: false },
+    message: String,
   }
 
   // Element must be the input itself — these controllers are attached
@@ -62,6 +65,14 @@ export class FieldValidatorController extends Controller {
   // Subclasses override.
   check(_value) {
     return null
+  }
+
+  // The validator's own `message:` when the server rendered one, else the
+  // bundled translation for `key`. Either way `%{count}` & co. are filled in;
+  // a custom message may also carry `%{value}`, as on the server.
+  messageOr(key, vars = {}) {
+    if (!(this.hasMessageValue && this.messageValue)) return t(key, vars)
+    return interpolate(this.messageValue, { value: this.fieldValue(), ...vars })
   }
 
   shouldSkip(value) {

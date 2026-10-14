@@ -345,7 +345,19 @@ the form-level `validations--form` coordinator), which `lazyLoadControllersFrom`
 resolves to `phlex_forms/controllers/validations/*_controller` — the path the gem
 ships them at.
 
-Messages ship for `en` / `fr` / `af`; override via `window.PhlexForms.messages`.
+A validator's own `message:` reaches the browser too, so the client shows what
+the server would: a String as is (`%{value}` is filled in, and `%{count}` for
+rules that have one: length and the numericality bounds), a Symbol resolved on
+the server through your app's i18n, a Proc skipped (it needs a record).
+Length's `too_long:` / `too_short:` / `wrong_length:` win over `message:`.
+
+```ruby
+validates :code, format: { with: /\A[a-z]*\z/, message: "may only contain lowercase letters" }
+f.field :note, validate: { length: { maximum: 30, too_long: "keep it under %{count}" } }
+```
+
+Without a `message:`, the bundled messages apply: they ship for `en` / `fr` /
+`af`; override them page-wide via `window.PhlexForms.messages`.
 
 ## Nested attributes, collections & escape valves
 

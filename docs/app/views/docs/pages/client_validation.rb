@@ -76,9 +76,30 @@ class Views::Docs::Pages::ClientValidation < DocsUI::Page
   def messages
     DocsUI::Section("Messages & i18n") do
       md <<~'MD'
-        Validation messages ship for `en`, `fr`, and `af`; override any string
-        client-side via `window.PhlexForms.messages`. The engine prepends the
-        gem's locale files to `I18n.load_path`, so your app's files win.
+        A validator's own `message:` reaches the browser, so the client shows
+        the text the server would add:
+
+        - a **String** is used as is; `%{value}` is filled in client-side, and
+          `%{count}` for rules that have one (length, the numericality bounds).
+        - a **Symbol** is resolved on the server through ActiveModel's lookup
+          chain (`activemodel.errors.models.<model>.attributes.<attr>.<key>`,
+          then `errors.messages.<key>`) in the current locale.
+        - a **Proc** is skipped (it needs a record); the generic message shows.
+
+        Length's `too_long:`, `too_short:` and `wrong_length:` win over
+        `message:`, as on the server. An inline `validate: { ... }` hash takes
+        the same options; a Symbol there has no model behind it, so it resolves
+        through `errors.messages.<key>` only, with `%{attribute}` reading "Value".
+      MD
+      DocsUI::Code(<<~'RUBY')
+        validates :code, format: { with: /\A[a-z]*\z/, message: "may only contain lowercase letters" }
+        validates :bio, length: { maximum: 160, too_long: "keep it under %{count} characters" }
+      RUBY
+      md <<~'MD'
+        Without a `message:`, the bundled messages apply. They ship for `en`,
+        `fr`, and `af`; override any string page-wide via
+        `window.PhlexForms.messages`. The engine prepends the gem's locale files
+        to `I18n.load_path`, so your app's files win.
       MD
     end
   end

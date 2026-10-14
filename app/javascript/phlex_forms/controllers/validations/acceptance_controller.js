@@ -1,5 +1,4 @@
 import { FieldValidatorController } from "phlex_forms/controllers/validations/base_controller"
-import { t } from "phlex_forms/i18n"
 
 // Mirrors ActiveModel::Validations::AcceptanceValidator. For
 // checkboxes, asserts `.checked`. For other inputs, asserts the
@@ -11,11 +10,11 @@ export default class extends FieldValidatorController {
 
   check(value) {
     if (this.element.type === "checkbox") {
-      return this.element.checked ? null : t("js.forms.validations.acceptance.accepted")
+      return this.element.checked ? null : this.messageOr("js.forms.validations.acceptance.accepted")
     }
     try {
       const list = JSON.parse(this.acceptValue)
-      return list.map(String).includes(String(value ?? "")) ? null : t("js.forms.validations.acceptance.accepted")
+      return list.map(String).includes(String(value ?? "")) ? null : this.messageOr("js.forms.validations.acceptance.accepted")
     } catch (_e) {
       return null
     }
