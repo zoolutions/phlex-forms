@@ -21,5 +21,13 @@ module PhlexForms
     rescue ::Ractor::Error, ::TypeError
       value
     end
+
+    # A callable (the icon renderer) shared only where that leaves it working: a
+    # Proc as in copy, any other object kept as given. A frozen copy of an
+    # object would break one that keeps state of its own (a cache, a buffer)
+    # on its first call, and a Method cannot be copied.
+    def callable(value)
+      value.is_a?(::Proc) ? copy(value) : value
+    end
   end
 end

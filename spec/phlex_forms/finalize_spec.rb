@@ -96,6 +96,20 @@ RSpec.describe "PhlexForms.finalize!" do
       expect(PhlexForms.config).to be_frozen
       expect(PhlexForms.config.render_icon(:x)).to eq("<i>x</i>")
     end
+
+    it "keeps a renderer object that holds its own state, unfrozen" do
+      renderer = Class.new do
+        def initialize = @rendered = []
+        def call(name, **) = (@rendered << name) && "<i>#{name}</i>"
+      end.new
+
+      PhlexForms.configure { |c| c.icon_renderer = renderer }
+
+      expect(PhlexForms.config).to be_frozen
+      expect(PhlexForms.config.icon_renderer).to equal(renderer)
+      expect(PhlexForms.config.render_icon(:x)).to eq("<i>x</i>")
+      expect(renderer).not_to be_frozen
+    end
   end
 
   describe ".reset_configuration!" do

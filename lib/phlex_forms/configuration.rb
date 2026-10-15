@@ -30,8 +30,10 @@ module PhlexForms
   # lambda written at the top level of an initializer has `main` as its self) is
   # kept as given and still works on the main Ractor; build it in a class or
   # module body, or with `Ractor.shareable_lambda` on Ruby 4.0, to keep the
-  # whole configuration shareable. After finalizing, write through `configure`, which
-  # edits a copy and swaps it in.
+  # whole configuration shareable. A renderer that is not a Proc (an object with
+  # #call, a Method) is never copied or frozen: it is shared only if it already
+  # is. After finalizing, write through `configure`, which edits a copy and
+  # swaps it in.
   class Configuration
     # The bundled inline SVGs. Built in the class body (self is the class and the
     # lambda captures nothing), so it can be made shareable once, here.
@@ -113,7 +115,7 @@ module PhlexForms
       @theme = Shareable.copy(theme)
       @infer_from_model = Shareable.copy(@infer_from_model)
       @field_variants = Shareable.copy(@field_variants)
-      @icon_renderer = Shareable.copy(@icon_renderer)
+      @icon_renderer = Shareable.callable(@icon_renderer)
       freeze
     end
   end
