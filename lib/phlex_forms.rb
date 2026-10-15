@@ -49,16 +49,17 @@ module PhlexForms
     # Yields the configuration, then finalizes it unless the Rails engine is
     # loaded (its after_initialize finalizes once every initializer has run). A
     # finalized configuration is never edited in place: the block gets a copy,
-    # which is finalized and swapped in whole.
+    # which is finalized and swapped in whole. Returns the block's value.
     def configure
       if @configuration.frozen?
         draft = @configuration.dup
-        yield(draft)
+        result = yield(draft)
         @configuration = draft.finalize!
       else
-        yield(@configuration)
+        result = yield(@configuration)
         finalize! unless defined?(PhlexForms::Engine)
       end
+      result
     end
 
     # Freezes the configuration with Ractor-shareable settings (see

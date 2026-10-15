@@ -81,6 +81,11 @@ RSpec.describe "PhlexForms.finalize!" do
       expect(before.field_variants).to eq([])
     end
 
+    it "returns the block's value, open or finalized" do
+      expect(PhlexForms.configure { :first }).to eq(:first)
+      expect(PhlexForms.configure { :again }).to eq(:again)
+    end
+
     it "never freezes the caller's own objects" do
       variants = [:primary]
 
