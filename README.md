@@ -437,6 +437,24 @@ PhlexForms.configure do |c|
 end
 ```
 
+## Configuration is finalized at boot
+
+`PhlexForms.configure` writes the configuration; finalizing freezes it and
+stores Ractor-shareable copies of its settings, so threads, fibers and Ractors
+all read one immutable value. Under Rails the engine finalizes in
+`after_initialize`, so every initializer can still write. Without Rails,
+`configure` finalizes when its block returns; a host that never calls it can
+call `PhlexForms.finalize!` at boot.
+
+After that, write through `configure` again (it edits a copy and swaps it in);
+a direct `PhlexForms.config.theme = :plain` raises `FrozenError`. Your own
+arrays and hashes are copied, never frozen. An icon renderer that cannot be shared, like
+a lambda at the top level of an initializer (its `self` is `main`), is kept as
+given and still renders on the main Ractor; define it in a class or module body
+(or with `Ractor.shareable_lambda` on Ruby 4.0) to keep the whole configuration
+shareable. `PhlexForms.reset_configuration!` restores the open defaults (for
+test suites).
+
 ## RuboCop cops
 
 Two cops nudge call sites toward the phlex-forms API. Enable them in your

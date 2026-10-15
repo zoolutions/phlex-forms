@@ -41,6 +41,35 @@ plus daisyUI's modifier groups). `PhlexForms::ClassMerge` is gone.
   FormControl, TagField, ChoicesSelect) merge through `DaisyUI::ClassMerge.merge`
   directly, which that switch doesn't affect.
 
+### Added
+
+- **`PhlexForms.finalize!`: a frozen, Ractor-shareable configuration** (#42,
+  conformance-kit). Finalizing freezes the configuration and stores
+  Ractor-shareable copies of its settings (the caller's arrays and hashes are
+  copied, not frozen). `PhlexForms.configure` finalizes when the Rails engine is absent;
+  under Rails the engine finalizes in `after_initialize`. A non-Rails host that
+  never calls `configure` can call `PhlexForms.finalize!` at boot.
+  `Theme.daisy` / `Theme.plain` are built once when the theme loads, and every
+  `Theme` is frozen. `form_options` and the `live` macros store shareable
+  copies too. On Ruby 4.0, field inference and option resolution run inside a
+  non-main Ractor; rendering there waits on Phlex
+  ([yippee-fun/phlex#1055](https://github.com/yippee-fun/phlex/pull/1055)).
+
+### Changed
+
+- **A finalized configuration is frozen.** Write through `PhlexForms.configure`
+  again, which edits a copy and swaps it in; a direct
+  `PhlexForms.config.infer_from_model = false` after boot raises `FrozenError`.
+  Direct writes before finalizing (in a Rails initializer) still work.
+- **An icon renderer that cannot be shared stays main-only.** A lambda at the
+  top level of an initializer has `main` as its `self`, so it cannot be made
+  Ractor-shareable: it is kept as given and still renders on the main Ractor.
+  Define it in a class or module body (or with `Ractor.shareable_lambda` on
+  Ruby 4.0) to keep the whole configuration shareable. The default renderer and
+  `Configuration.glyphs_renderer` are shareable.
+- `rich_textarea` renders `<lexxy-editor>` through Phlex's `tag` instead of
+  `register_element`; the markup is the same.
+
 ### Removed
 
 - **`PhlexForms::ClassMerge`**: use `DaisyUI::ClassMerge.merge`.
@@ -51,6 +80,10 @@ plus daisyUI's modifier groups). `PhlexForms::ClassMerge` is gone.
 
 ### Fixed
 
+- **The themes build without phlex-reactive.** `Theme.daisy` named
+  `Forms::TagField` before checking for the soft dependency, so a host without
+  phlex-reactive got `NameError: uninitialized constant Forms::TagField` on its
+  first form.
 - **Client-side validators honour the validator's `message:`** (issue #41).
   `validates :code, format: { with: /\A[a-z]*\z/, message: "lowercase only" }`
   used to show the generic "is invalid" in the browser and the specific text
