@@ -15,6 +15,7 @@ group :development, :test do
   gem "phlex-reactive", ">= 0.12.2"
   gem "debug"
   gem "gem-release"
+  gem "railties", "~> 8.0", require: false # boots a minimal Rails app in spec/phlex_forms/rails_boot_spec.rb
   gem "rake"
   gem "rspec"
   gem "rubocop"
