@@ -11,6 +11,10 @@ AllCops:
   DisabledByDefault: false
   DisplayCopNames: true
   NewCops: enable
+  # The docs site is its own Rails app with its own bundle and .rubocop.yml
+  # (which requires docs_kit/rubocop, not in this bundle); lint it from docs/.
+  Exclude:
+    - docs/**/*
 
 Layout/ArgumentAlignment:
   EnforcedStyle: with_fixed_indentation
