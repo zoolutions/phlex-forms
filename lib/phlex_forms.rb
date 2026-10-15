@@ -10,6 +10,11 @@ require "zeitwerk"
 require "daisy_ui"
 
 begin
+  # phlex-reactive's Sortable calls Hash#to_json while it loads without
+  # requiring json (a Rails host has it loaded already). Finalizing builds the
+  # themes, which load the tag-field leaves and with them Sortable, so without
+  # Rails `configure` would raise NoMethodError.
+  require "json"
   require "phlex/reactive"
 rescue LoadError
   # phlex-reactive is a soft dependency: without it the `live` server-truth
