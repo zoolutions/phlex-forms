@@ -57,7 +57,7 @@ module PhlexForms
           submit: Forms::Submit, row: Forms::Row, group: Forms::Group,
           # tag_field is phlex-reactive-gated (ClientBindings); only registered
           # when the soft dep is present, else :tag_field raises a clear KeyError.
-          **reactive_roles(Forms::TagField, Forms::RootlessTagField)
+          **reactive_roles(Forms)
         })
       end
 
@@ -73,7 +73,7 @@ module PhlexForms
           control: Forms::Plain::Control, label: Forms::Plain::Label,
           field_error: Forms::Plain::FieldError, field_hint: Forms::Plain::FieldHint,
           submit: Forms::Plain::Submit, row: Forms::Plain::Row, group: Forms::Plain::Group,
-          **reactive_roles(Forms::Plain::TagField, Forms::Plain::RootlessTagField)
+          **reactive_roles(Forms::Plain)
         })
       end
 
@@ -82,10 +82,12 @@ module PhlexForms
       # phlex-reactive-gated roles: mapped only when the soft dep is present. When
       # absent, the leaf classes aren't autoloaded, so these roles are simply not
       # registered (fetching one raises the theme's own KeyError with the list).
-      def reactive_roles(tag_field_class, rootless_tag_field_class)
+      # Takes the namespace, not the classes: naming Forms::TagField without
+      # phlex-reactive would raise NameError before the guard ran.
+      def reactive_roles(namespace)
         return {} unless defined?(Phlex::Reactive)
 
-        { tag_field: tag_field_class, rootless_tag_field: rootless_tag_field_class }
+        { tag_field: namespace::TagField, rootless_tag_field: namespace::RootlessTagField }
       end
     end
   end
