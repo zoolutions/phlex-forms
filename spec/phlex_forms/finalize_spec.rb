@@ -86,6 +86,14 @@ RSpec.describe "PhlexForms.finalize!" do
       expect(PhlexForms.configure { :again }).to eq(:again)
     end
 
+    it "keeps field_variants appendable after it is set to nil" do
+      PhlexForms.configure { |c| c.field_variants = nil }
+
+      PhlexForms.configure { |c| c.field_variants << :sm }
+
+      expect(PhlexForms.config.field_variants).to eq([:sm])
+    end
+
     it "never freezes the caller's own objects" do
       variants = [:primary]
 

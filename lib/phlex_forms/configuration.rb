@@ -59,8 +59,11 @@ module PhlexForms
 
     # Global daisyui variants prepended to every `field`'s inner input, e.g.
     # `c.field_variants = [:primary]`. Form-level `field_variants:` and
-    # call-site modifiers stack after (later wins).
-    attr_writer :field_variants
+    # call-site modifiers stack after (later wins). nil means none, stored as an
+    # empty list so `c.field_variants << :sm` keeps working.
+    def field_variants=(variants)
+      @field_variants = variants || []
+    end
 
     # The default theme: :daisy, :plain, or a PhlexForms::Theme instance.
     # Defaults to daisy.
