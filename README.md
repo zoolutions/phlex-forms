@@ -440,8 +440,9 @@ end
 ## Configuration is finalized at boot
 
 `PhlexForms.configure` writes the configuration; finalizing freezes it and
-stores Ractor-shareable copies of its settings, so threads, fibers and Ractors
-all read one immutable value. It happens on its own:
+stores Ractor-shareable copies of its settings, so threads and fibers read one
+immutable value, and so can Ractors when every setting can be shared (see
+below). It happens on its own:
 
 - **Under Rails** the engine finalizes in `after_initialize`, once every
   initializer has run, so initializers can still write (through `configure`

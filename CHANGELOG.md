@@ -11,8 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Upgrading to 0.5
 
-The configuration is frozen once the app has booted, so threads, fibers and
-Ractors all read one immutable, Ractor-shareable value (#42, conformance-kit).
+The configuration is frozen once the app has booted, so threads and fibers
+read one immutable value, and so can Ractors when every setting can be shared
+(#42, conformance-kit; see the unshareable-value note below).
 
 - **It finalizes on its own.** Under Rails the engine calls
   `PhlexForms.finalize!` in `after_initialize`, after every initializer has
@@ -66,6 +67,10 @@ Ractors all read one immutable, Ractor-shareable value (#42, conformance-kit).
   first form.
 - **`Theme.daisy` / `Theme.plain` are built once.** Two threads resolving a
   theme for the first time could each build their own.
+- **phlex-forms loads without Rails with phlex-reactive bundled.** phlex-reactive's
+  `Sortable` calls `Hash#to_json` while it loads without requiring json, so a
+  plain Ruby host got `NoMethodError` on its first form (and, with finalizing,
+  from `configure`). phlex-forms requires json before phlex-reactive.
 
 ## [0.4.1] and earlier
 
