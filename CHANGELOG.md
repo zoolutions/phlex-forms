@@ -7,6 +7,68 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0]
+
+### Upgrading to 0.5
+
+The configuration is frozen once the app has booted, so threads, fibers and
+Ractors all read one immutable, Ractor-shareable value (#42, conformance-kit).
+
+- **It finalizes on its own.** Under Rails the engine calls
+  `PhlexForms.finalize!` in `after_initialize`, after every initializer has
+  run, with no app code. Without Rails, `PhlexForms.configure` finalizes when
+  its block returns; a host that never calls `configure` (or loads Rails
+  without booting an app) calls `PhlexForms.finalize!` at boot.
+- **A direct write after boot raises `FrozenError`.** `PhlexForms.config.infer_from_model = false`
+  in a Rails initializer still works. After boot (a test's `before` block, or
+  after `configure` outside Rails), write through `PhlexForms.configure`
+  instead: it edits a copy and swaps it in.
+- **Finalizing never raises over a value it cannot share.** The value is kept
+  as given and works on the main Ractor only: an icon renderer lambda at the
+  top level of an initializer (its `self` is `main`, and it may close over a
+  logger) is one. Define it in a class or module body (or with
+  `Ractor.shareable_lambda` on Ruby 4.0) to keep the whole configuration
+  shareable. A renderer that is not a Proc (an object with `#call`, a
+  `Method`) is never copied or frozen, so one that keeps a cache still works.
+- **`form_options` and the `live` macros keep frozen copies** of what they are
+  given, so the values nested in `form_defaults` and the live settings are
+  frozen. Your own arrays and hashes are copied, never frozen.
+
+### Added
+
+- **`PhlexForms.finalize!`**: freezes the configuration and stores
+  Ractor-shareable copies of its settings. Idempotent; returns the
+  configuration. `PhlexForms::Theme::DAISY` / `PLAIN` are the built-in themes,
+  built once when the theme loads (`Theme.daisy` / `Theme.plain` return them),
+  and every `Theme` is frozen.
+- **Ractor support for the non-rendering paths.** On Ruby 4.0, field
+  inference, option resolution, theme resolution, the icon renderer and the
+  `form_options` / `live` settings work inside a non-main Ractor. Rendering
+  there waits on Phlex
+  ([yippee-fun/phlex#1055](https://github.com/yippee-fun/phlex/pull/1055)).
+- **conformance-kit 0.4 gates in CI**: the thread-safety RuboCop cops, thread
+  and fiber contention specs, a Ractor canary and a strict
+  `conformance-audit` of `PhlexForms` and `Forms` with nothing allowlisted.
+
+### Changed
+
+- **The configuration is frozen after boot** (see Upgrading to 0.5).
+  `Configuration` sets every default in `initialize`; no reader memoizes. The
+  default icon renderer and `Configuration.glyphs_renderer` are shareable.
+- `rich_textarea` renders `<lexxy-editor>` through Phlex's `tag` instead of
+  `register_element`; the markup is the same.
+
+### Fixed
+
+- **The themes build without phlex-reactive.** `Theme.daisy` named
+  `Forms::TagField` before checking for the soft dependency, so a host without
+  phlex-reactive got `NameError: uninitialized constant Forms::TagField` on its
+  first form.
+- **`Theme.daisy` / `Theme.plain` are built once.** Two threads resolving a
+  theme for the first time could each build their own.
+
+## [0.4.1] and earlier
+
 ### Upgrading to 0.4
 
 phlex-forms now depends on **daisyui `~> 2.0`** and merges every default +
@@ -41,35 +103,6 @@ plus daisyUI's modifier groups). `PhlexForms::ClassMerge` is gone.
   FormControl, TagField, ChoicesSelect) merge through `DaisyUI::ClassMerge.merge`
   directly, which that switch doesn't affect.
 
-### Added
-
-- **`PhlexForms.finalize!`: a frozen, Ractor-shareable configuration** (#42,
-  conformance-kit). Finalizing freezes the configuration and stores
-  Ractor-shareable copies of its settings (the caller's arrays and hashes are
-  copied, not frozen). `PhlexForms.configure` finalizes when the Rails engine is absent;
-  under Rails the engine finalizes in `after_initialize`. A non-Rails host that
-  never calls `configure` can call `PhlexForms.finalize!` at boot.
-  `Theme.daisy` / `Theme.plain` are built once when the theme loads, and every
-  `Theme` is frozen. `form_options` and the `live` macros store shareable
-  copies too. On Ruby 4.0, field inference and option resolution run inside a
-  non-main Ractor; rendering there waits on Phlex
-  ([yippee-fun/phlex#1055](https://github.com/yippee-fun/phlex/pull/1055)).
-
-### Changed
-
-- **A finalized configuration is frozen.** Write through `PhlexForms.configure`
-  again, which edits a copy and swaps it in; a direct
-  `PhlexForms.config.infer_from_model = false` after boot raises `FrozenError`.
-  Direct writes before finalizing (in a Rails initializer) still work.
-- **An icon renderer that cannot be shared stays main-only.** A lambda at the
-  top level of an initializer has `main` as its `self`, so it cannot be made
-  Ractor-shareable: it is kept as given and still renders on the main Ractor.
-  Define it in a class or module body (or with `Ractor.shareable_lambda` on
-  Ruby 4.0) to keep the whole configuration shareable. The default renderer and
-  `Configuration.glyphs_renderer` are shareable.
-- `rich_textarea` renders `<lexxy-editor>` through Phlex's `tag` instead of
-  `register_element`; the markup is the same.
-
 ### Removed
 
 - **`PhlexForms::ClassMerge`**: use `DaisyUI::ClassMerge.merge`.
@@ -80,10 +113,6 @@ plus daisyUI's modifier groups). `PhlexForms::ClassMerge` is gone.
 
 ### Fixed
 
-- **The themes build without phlex-reactive.** `Theme.daisy` named
-  `Forms::TagField` before checking for the soft dependency, so a host without
-  phlex-reactive got `NameError: uninitialized constant Forms::TagField` on its
-  first form.
 - **Client-side validators honour the validator's `message:`** (issue #41).
   `validates :code, format: { with: /\A[a-z]*\z/, message: "lowercase only" }`
   used to show the generic "is invalid" in the browser and the specific text

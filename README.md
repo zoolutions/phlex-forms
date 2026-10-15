@@ -441,19 +441,27 @@ end
 
 `PhlexForms.configure` writes the configuration; finalizing freezes it and
 stores Ractor-shareable copies of its settings, so threads, fibers and Ractors
-all read one immutable value. Under Rails the engine finalizes in
-`after_initialize`, so every initializer can still write. Without Rails,
-`configure` finalizes when its block returns; a host that never calls it can
-call `PhlexForms.finalize!` at boot.
+all read one immutable value. It happens on its own:
+
+- **Under Rails** the engine finalizes in `after_initialize`, once every
+  initializer has run, so initializers can still write (through `configure`
+  or directly).
+- **Without Rails** (no `Rails::Engine` when phlex-forms loads), `configure`
+  finalizes when its block returns. A host that never calls `configure`, or
+  loads Rails without booting an app, calls `PhlexForms.finalize!` at boot.
 
 After that, write through `configure` again (it edits a copy and swaps it in);
 a direct `PhlexForms.config.theme = :plain` raises `FrozenError`. Your own
-arrays and hashes are copied, never frozen. An icon renderer that cannot be shared, like
-a lambda at the top level of an initializer (its `self` is `main`), is kept as
-given and still renders on the main Ractor; define it in a class or module body
-(or with `Ractor.shareable_lambda` on Ruby 4.0) to keep the whole configuration
-shareable. `PhlexForms.reset_configuration!` restores the open defaults (for
-test suites).
+arrays and hashes are copied, never frozen.
+
+Finalizing never raises over a value it cannot share: that value is kept as
+given and works on the main Ractor only. An icon renderer lambda at the top
+level of an initializer (its `self` is `main`, and it may close over a logger)
+is one; define it in a class or module body (or with `Ractor.shareable_lambda`
+on Ruby 4.0) to keep the whole configuration shareable. A renderer that is not
+a Proc (an object with `#call`, a `Method`) is never copied or frozen, so one
+that keeps a cache still works. `PhlexForms.reset_configuration!` restores the
+open defaults (for test suites).
 
 ## RuboCop cops
 
