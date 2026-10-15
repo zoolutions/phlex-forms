@@ -42,10 +42,15 @@ module Forms
     end
 
     class_methods do
+      # live (setup_live), live_permit, live_deny and live_tags are class macros:
+      # they run while the form class body loads (at boot, on the main Ractor)
+      # and store Ractor-shareable values (PhlexForms::Shareable.copy), so the
+      # readers work in any Ractor.
+      # rubocop:disable ThreadSafety/ClassInstanceVariable
       def setup_live(model_class:, scope:, debounce:)
         @live_model_class = model_class
-        @live_scope = scope.to_s
-        @live_debounce = debounce
+        @live_scope = PhlexForms::Shareable.copy(scope.to_s)
+        @live_debounce = PhlexForms::Shareable.copy(debounce)
         reactive_state :model_gid, :touched
         action :validate, params: { scope.to_sym => :form_attributes, _touch: :string }
         # phlex-reactive >= 0.11 defaults verify_authorized ON: an action that
@@ -64,8 +69,8 @@ module Forms
       # Narrow (live_permit) or trim (live_deny) the attributes the :validate
       # action may assign. Default: the model's column/attribute names plus
       # every validated attribute (and its _confirmation twin).
-      def live_permit(*attrs) = @live_permit = attrs.map(&:to_s)
-      def live_deny(*attrs)   = @live_deny = attrs.map(&:to_s)
+      def live_permit(*attrs) = @live_permit = PhlexForms::Shareable.copy(attrs.map(&:to_s))
+      def live_deny(*attrs)   = @live_deny = PhlexForms::Shareable.copy(attrs.map(&:to_s))
 
       # Lift a tag field onto the form's reactive root so live :validate sees its
       # comma-joined value. The widget renders ROOTLESS (no nested reactive root),
@@ -90,7 +95,7 @@ module Forms
             "non-live)."
         end
 
-        @live_tags = { name: name.to_sym, suggestions: }
+        @live_tags = PhlexForms::Shareable.copy({ name: name.to_sym, suggestions: })
       end
 
       def live_tags_declaration = @live_tags || inherited_live(:live_tags_declaration)
@@ -101,6 +106,7 @@ module Forms
         permitted |= [tag[:name].to_s] if tag
         permitted - (@live_deny || [])
       end
+      # rubocop:enable ThreadSafety/ClassInstanceVariable
 
       private
 
@@ -219,5 +225,11 @@ module Forms
         @model.public_send(setter, value) if @model.respond_to?(setter)
       end
     end
+
+    # ActiveSupport::Concern's own list of the concerns this one includes
+    # (Phlex::Reactive::Component): filled while this module body loads and
+    # only read after, when a form class includes Forms::Live. Frozen, so the
+    # module holds no mutable state.
+    @_dependencies.freeze
   end
 end

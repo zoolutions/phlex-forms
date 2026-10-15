@@ -32,6 +32,10 @@ module PhlexForms
       app.config.i18n.load_path.unshift(*locales)
     end
 
+    # PhlexForms.configure leaves the configuration open under Rails; freeze it
+    # (with Ractor-shareable settings) once every initializer has run.
+    config.after_initialize { PhlexForms.finalize! }
+
     # The raw-hash param type Forms::Live's :validate action schema declares.
     # Registered from an initializer because phlex-reactive freezes its
     # param-type registry after boot.

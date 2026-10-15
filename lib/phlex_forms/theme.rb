@@ -19,8 +19,10 @@ module PhlexForms
   #
   #   PhlexForms::Theme.resolve(:plain).with(input: MyInput)
   class Theme
+    # Frozen, so a theme of component classes is Ractor-shareable.
     def initialize(components)
       @components = components.freeze
+      freeze
     end
 
     def [](role)
@@ -45,48 +47,53 @@ module PhlexForms
         end
       end
 
-      def daisy
-        @daisy ||= new({
-          input: Forms::Input, select: Forms::Select, choices_select: Forms::ChoicesSelect,
-          textarea: Forms::Textarea, rich_textarea: Forms::RichTextarea,
-          checkbox: Forms::Checkbox, toggle: Forms::Toggle, radio: Forms::Radio,
-          checkbox_group: Forms::CheckboxGroup,
-          file: Forms::FileInput, wrapped_input: Forms::WrappedInput, hidden: Forms::Hidden,
-          control: Forms::FormControl, label: Forms::Label,
-          field_error: Forms::FieldError, field_hint: Forms::FieldHint,
-          submit: Forms::Submit, row: Forms::Row, group: Forms::Group,
-          # tag_field is phlex-reactive-gated (ClientBindings); only registered
-          # when the soft dep is present, else :tag_field raises a clear KeyError.
-          **reactive_roles(Forms::TagField, Forms::RootlessTagField)
-        })
-      end
+      def daisy = DAISY
 
-      # choices_select degrades to the native plain select (no choices.js) and
-      # rich_textarea to a plain textarea; toggle renders as a checkbox.
-      def plain
-        @plain ||= new({
-          input: Forms::Plain::Input, select: Forms::Plain::Select, choices_select: Forms::Plain::Select,
-          textarea: Forms::Plain::Textarea, rich_textarea: Forms::Plain::Textarea,
-          checkbox: Forms::Plain::Checkbox, toggle: Forms::Plain::Checkbox, radio: Forms::Plain::Radio,
-          checkbox_group: Forms::Plain::CheckboxGroup,
-          file: Forms::Plain::FileInput, wrapped_input: Forms::Plain::WrappedInput, hidden: Forms::Hidden,
-          control: Forms::Plain::Control, label: Forms::Plain::Label,
-          field_error: Forms::Plain::FieldError, field_hint: Forms::Plain::FieldHint,
-          submit: Forms::Plain::Submit, row: Forms::Plain::Row, group: Forms::Plain::Group,
-          **reactive_roles(Forms::Plain::TagField, Forms::Plain::RootlessTagField)
-        })
-      end
+      def plain = PLAIN
 
       private
 
       # phlex-reactive-gated roles: mapped only when the soft dep is present. When
       # absent, the leaf classes aren't autoloaded, so these roles are simply not
       # registered (fetching one raises the theme's own KeyError with the list).
-      def reactive_roles(tag_field_class, rootless_tag_field_class)
+      # Takes the namespace, not the classes: naming Forms::TagField without
+      # phlex-reactive would raise NameError before the guard ran.
+      def reactive_roles(namespace)
         return {} unless defined?(Phlex::Reactive)
 
-        { tag_field: tag_field_class, rootless_tag_field: rootless_tag_field_class }
+        { tag_field: namespace::TagField, rootless_tag_field: namespace::RootlessTagField }
       end
     end
+
+    # Both built-ins are built once, when this file loads (never memoized by a
+    # reader, so no two threads race to build one; PhlexForms.finalize! loads
+    # it at boot), and the phlex-reactive probe is evaluated once, here.
+    DAISY = new({
+      input: Forms::Input, select: Forms::Select, choices_select: Forms::ChoicesSelect,
+      textarea: Forms::Textarea, rich_textarea: Forms::RichTextarea,
+      checkbox: Forms::Checkbox, toggle: Forms::Toggle, radio: Forms::Radio,
+      checkbox_group: Forms::CheckboxGroup,
+      file: Forms::FileInput, wrapped_input: Forms::WrappedInput, hidden: Forms::Hidden,
+      control: Forms::FormControl, label: Forms::Label,
+      field_error: Forms::FieldError, field_hint: Forms::FieldHint,
+      submit: Forms::Submit, row: Forms::Row, group: Forms::Group,
+      # tag_field is phlex-reactive-gated (ClientBindings); only registered
+      # when the soft dep is present, else :tag_field raises a clear KeyError.
+      **reactive_roles(Forms)
+    })
+
+    # choices_select degrades to the native plain select (no choices.js) and
+    # rich_textarea to a plain textarea; toggle renders as a checkbox.
+    PLAIN = new({
+      input: Forms::Plain::Input, select: Forms::Plain::Select, choices_select: Forms::Plain::Select,
+      textarea: Forms::Plain::Textarea, rich_textarea: Forms::Plain::Textarea,
+      checkbox: Forms::Plain::Checkbox, toggle: Forms::Plain::Checkbox, radio: Forms::Plain::Radio,
+      checkbox_group: Forms::Plain::CheckboxGroup,
+      file: Forms::Plain::FileInput, wrapped_input: Forms::Plain::WrappedInput, hidden: Forms::Hidden,
+      control: Forms::Plain::Control, label: Forms::Plain::Label,
+      field_error: Forms::Plain::FieldError, field_hint: Forms::Plain::FieldHint,
+      submit: Forms::Plain::Submit, row: Forms::Plain::Row, group: Forms::Plain::Group,
+      **reactive_roles(Forms::Plain)
+    })
   end
 end
