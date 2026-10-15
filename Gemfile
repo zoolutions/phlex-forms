@@ -20,5 +20,6 @@ group :development, :test do
   gem "rubocop-performance"
   gem "rubocop-rake"
   gem "rubocop-rspec"
+  gem "rubocop-thread_safety", ">= 0.8", require: false # conformance-kit config/rubocop.yml
   gem "super_diff"
 end
