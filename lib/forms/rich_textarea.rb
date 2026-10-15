@@ -6,8 +6,6 @@ module Forms
   # Renders an editor bound to the field; when the value is an ActionText::RichText
   # its HTML body is used as the initial content.
   class RichTextarea < Phlex::HTML
-    register_element :lexxy_editor
-
     def initialize(*modifiers, name:, id: nil, value: nil, **options)
       @modifiers = modifiers
       @name = name
@@ -20,9 +18,12 @@ module Forms
 
     # Lexxy configures the editor through CHILD elements — `<lexxy-prompt>` for
     # @mentions, `<lexxy-code-language-picker>` for code blocks — so the block
-    # has to reach the element, not be dropped.
+    # has to reach the element, not be dropped. Rendered through `tag`, not a
+    # `register_element` method, so the class keeps no element registry of its
+    # own.
     def view_template(&)
-      lexxy_editor(
+      tag(
+        :lexxy_editor,
         name: @name,
         id: @id,
         value: formatted_value,
