@@ -26,9 +26,14 @@ module Forms
       # (instance args beat class defaults; subclass defaults beat parents'):
       #
       #   form_options :spaced, url: "/signup", validate: true
+      #
+      # A class macro: it runs while the form class body loads (at boot, on the
+      # main Ractor) and stores Ractor-shareable copies of its arguments
+      # (PhlexForms::Shareable.copy), so the readers work in any Ractor.
+      # rubocop:disable ThreadSafety/ClassInstanceVariable
       def form_options(*modifiers, **defaults)
-        @form_modifiers = modifiers
-        @form_defaults = defaults
+        @form_modifiers = PhlexForms::Shareable.copy(modifiers)
+        @form_defaults = PhlexForms::Shareable.copy(defaults)
       end
 
       def form_modifiers
@@ -40,6 +45,7 @@ module Forms
         inherited = superclass.respond_to?(:form_defaults) ? superclass.form_defaults : {}
         inherited.merge(@form_defaults || {})
       end
+      # rubocop:enable ThreadSafety/ClassInstanceVariable
 
       # Server-truth live validation via phlex-reactive (a soft dependency):
       #
