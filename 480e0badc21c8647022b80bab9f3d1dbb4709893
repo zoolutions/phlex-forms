@@ -1,0 +1,23 @@
+app/javascript/phlex_forms/controllers/validations/length_controller.js
+  s_a383608fb3f669::t_c89ddddf486627 62
+app/javascript/phlex_forms/controllers/validations/base_controller.js
+  s_a383608fb3f669::t_c89ddddf486627 71-72,74-75
+docs/app/views/docs/pages/client_validation.rb
+  s_a383608fb3f669::t_c89ddddf486627 90-91
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "480e0badc21c8647022b80bab9f3d1dbb4709893",
+  "prompts": {},
+  "sessions": {
+    "s_a383608fb3f669": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e7eefeef-1a4b-45c8-b169-7b82e4928224",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "mhenrixon <mikael@mhenrixon.com>"
+    }
+  }
+}
