@@ -32,17 +32,37 @@ module PhlexForms
   # used but its backing dependency is not available.
   class FeatureUnavailable < Error; end
 
+  # @configuration is built when this file loads (see the bottom) and replaced
+  # only by configure and reset_configuration!, on the main Ractor at boot or
+  # between tests (a non-main Ractor cannot write a module ivar). Once finalized
+  # it is frozen and Ractor-shareable, so any Ractor may read it.
+  # rubocop:disable-next ThreadSafety/ClassInstanceVariable
   class << self
-    def configuration
-      @configuration ||= Configuration.new
-    end
+    attr_reader :configuration
     alias config configuration
 
+    # Yields the configuration, then finalizes it unless the Rails engine is
+    # loaded (its after_initialize finalizes once every initializer has run). A
+    # finalized configuration is never edited in place: the block gets a copy,
+    # which is finalized and swapped in whole.
     def configure
-      yield(configuration)
+      if @configuration.frozen?
+        draft = @configuration.dup
+        yield(draft)
+        @configuration = draft.finalize!
+      else
+        yield(@configuration)
+        finalize! unless defined?(PhlexForms::Engine)
+      end
     end
 
-    # Reset configuration to defaults. Intended for test isolation.
+    # Freezes the configuration with Ractor-shareable settings (see
+    # Configuration#finalize!). Idempotent; returns the configuration.
+    def finalize!
+      @configuration.finalize!
+    end
+
+    # Reset configuration to defaults, open again. Intended for test isolation.
     def reset_configuration!
       @configuration = Configuration.new
     end
@@ -96,6 +116,10 @@ unless defined?(Phlex::Reactive)
 end
 
 loader.setup
+
+# The default configuration, built at load (never lazily, so no two readers
+# race to create it).
+PhlexForms.reset_configuration!
 
 # Optional Rails integration (Stimulus controllers via importmap/assets, and
 # the gem's default locale files). Loaded only under Rails; the gem stays pure
