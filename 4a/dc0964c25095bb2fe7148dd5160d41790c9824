@@ -1,0 +1,21 @@
+spec/phlex_forms/finalize_spec.rb
+  s_4786a62cd35147::t_41bd075954a1ac 84-96
+lib/phlex_forms.rb
+  s_4786a62cd35147::t_1c59177791a4f4 52,56,59,62
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "4adc0964c25095bb2fe7148dd5160d41790c9824",
+  "prompts": {},
+  "sessions": {
+    "s_4786a62cd35147": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d1e58604-bb1b-456c-ace0-8fe7f151dae8",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "mhenrixon <mikael@mhenrixon.com>"
+    }
+  }
+}
