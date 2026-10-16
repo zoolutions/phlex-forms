@@ -163,6 +163,13 @@ plus daisyUI's modifier groups). `PhlexForms::ClassMerge` is gone.
   builder path. Without it the browser collapsed a multi-file selection into
   ONE scalar param, which a host app's `params.expect(attr: [])` silently
   discarded — uploads no-opped with a success response.
+- **Hidden fields render as bare inputs** (#22): `f.Hidden`, `f.hidden_field`,
+  `f.field(..., as: :hidden)` and `f.Input(..., type: :hidden)` went through
+  the `:input` theme role, so under the daisy theme a hidden field carried
+  `class="input w-full"`, and daisyUI's `display: inline-flex` beat Safari's
+  non-`!important` `display: none`: an empty box and a phantom tab stop. They
+  now render the new `Forms::Hidden` leaf through a new `:hidden` theme role,
+  with no styling classes and no `error:`.
 
 ## [0.2.9] - 2026-07-16
 
