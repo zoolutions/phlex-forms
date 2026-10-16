@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.5.0]
+## [0.5.0] - 2026-10-15
 
 ### Upgrading to 0.5
 
@@ -72,7 +72,24 @@ read one immutable value, and so can Ractors when every setting can be shared
   plain Ruby host got `NoMethodError` on its first form (and, with finalizing,
   from `configure`). phlex-forms requires json before phlex-reactive.
 
-## [0.4.1] and earlier
+## [0.4.1] - 2026-10-14
+
+### Fixed
+
+- **Client-side validators honour the validator's `message:`** (issue #41).
+  `validates :code, format: { with: /\A[a-z]*\z/, message: "lowercase only" }`
+  used to show the generic "is invalid" in the browser and the specific text
+  only after a round trip. The introspector now emits
+  `data-validations--<validator>-message-value`: a String as is (`%{count}`
+  stays for the browser to fill), a Symbol resolved on the server through
+  ActiveModel's lookup chain in the current locale, a Proc skipped (it needs a
+  record). Length's `too_long:` / `too_short:` / `wrong_length:` win over
+  `message:`, as on the server. Every shipped controller prefers the value and
+  falls back to its bundled message; the submit coordinator collects it too. A
+  `validate: { presence: { message: "…" } }` / `confirmation: { message: "…" }`
+  rules hash now keeps its options (it used to collapse them to `true`).
+
+## [0.4.0] - 2026-09-30
 
 ### Upgrading to 0.4
 
@@ -116,20 +133,10 @@ plus daisyUI's modifier groups). `PhlexForms::ClassMerge` is gone.
   longer raises `FeatureUnavailable`. The Plain theme is unchanged and still
   emits zero daisy classes.
 
+## [0.3.1] - 2026-09-09
+
 ### Fixed
 
-- **Client-side validators honour the validator's `message:`** (issue #41).
-  `validates :code, format: { with: /\A[a-z]*\z/, message: "lowercase only" }`
-  used to show the generic "is invalid" in the browser and the specific text
-  only after a round trip. The introspector now emits
-  `data-validations--<validator>-message-value`: a String as is (`%{count}`
-  stays for the browser to fill), a Symbol resolved on the server through
-  ActiveModel's lookup chain in the current locale, a Proc skipped (it needs a
-  record). Length's `too_long:` / `too_short:` / `wrong_length:` win over
-  `message:`, as on the server. Every shipped controller prefers the value and
-  falls back to its bundled message; the submit coordinator collects it too. A
-  `validate: { presence: { message: "…" } }` / `confirmation: { message: "…" }`
-  rules hash now keeps its options (it used to collapse them to `true`).
 - **`rich_textarea` forwards its block into `<lexxy-editor>`**: Lexxy configures
   an editor through CHILD elements — `<lexxy-prompt>` for @mentions,
   `<lexxy-code-language-picker>` for code blocks — but the component rendered
@@ -146,12 +153,73 @@ plus daisyUI's modifier groups). `PhlexForms::ClassMerge` is gone.
   pin uploads to whichever host rendered the page first), fully guarded — no
   Rails dependency is introduced, and a caller-supplied value always wins.
 
+## [0.3.0] - 2026-08-12
+
+### Fixed
+
 - **`FileInput` multiple uploads submit an array** (Rails `file_field` parity):
   with `multiple:` set, the input name now gets `[]` appended (unless already
   present), for the standalone component, the `Plain` variant, and the form
   builder path. Without it the browser collapsed a multi-file selection into
   ONE scalar param, which a host app's `params.expect(attr: [])` silently
   discarded — uploads no-opped with a success response.
+
+## [0.2.9] - 2026-07-16
+
+### Fixed
+
+- **A caller width class stacked with the `w-full` default instead of replacing
+  it**: `DelegatedField#width_class` joined `"w-full"` and the caller's
+  `class:` verbatim, so `Forms::Select(class: "w-36")` emitted
+  `class="... w-full w-36"` and stylesheet source order — not author intent —
+  picked the winner (in practice `w-full`, which blew filter selects up to full
+  width; zazu#2934). `ClassMerge` gained a width family (anchored `w-*`, so
+  `min-w-*`/`max-w-*` still compose) and `width_class` merges through it —
+  last width wins, matching the daisyui size/color family semantics.
+
+## [0.2.8] - 2026-07-11
+
+### Added
+
+- **`hidden_field`** (#21): a snake_case alias of `f.Hidden` for Rails
+  `FormBuilder` migrations, on inline forms and `fields_for` builders. An
+  explicit `value:` still wins over the model's value.
+
+## [0.2.7] - 2026-07-11
+
+### Changed
+
+- **`tag_field` uses phlex-reactive 0.12.2's escape-hatch sugar**
+  (`reactive_tags` / `reactive_filter`) (#20): the wire name is validated at
+  render, and the client-side type-ahead filter runs again (under
+  phlex-reactive 0.12.x only one of its two selectors was emitted, so it never
+  ran).
+
+## [0.2.6] - 2026-07-11
+
+### Added
+
+- **`checkbox_group` `item_label:`** — the per-item text accessor, so a
+  `f.field(:tags, as: :checkbox_group, label: "Tags", item_label: ->(t){…})`
+  renders a visible group heading (`label:`, via the Control) AND custom item
+  labels at once — previously `label:` on the `f.field` path was eaten by the
+  heading and items fell back to `to_s`. `item_label:` wins over `label:` for the
+  item text; on the bare verb `label:` stays the item accessor and `item_label:`
+  is an alias. Absent it, behavior is unchanged.
+
+## [0.2.5] - 2026-07-11
+
+### Added
+
+- **`checkbox_group` accessible name** (issue #17): the `div[role="group"]` can
+  now carry an accessible name/description. HTML/ARIA attributes pass straight
+  through to the group, so the bare verb is named with plain `aria:`
+  (`aria: { label: "Tags" }` or `aria: { labelledby: "id" }`); through `f.field`
+  the Control's own visible `label:` / `hint:` get stable ids and the field wires
+  `aria-labelledby` / `aria-describedby` at them (no duplicate markup). Absent a
+  name, output is unchanged.
+
+## [0.2.4] - 2026-07-11
 
 ### Added
 
@@ -162,20 +230,6 @@ plus daisyUI's modifier groups). `PhlexForms::ClassMerge` is gone.
   Shares one array-valued field name with a leading empty-array hidden field,
   derives the checked set from the model's current value, and renders under both
   themes. `variant:` (`:stack`/`:inline`/`:pill`) is layout-only, no JS.
-- **`checkbox_group` accessible name** (issue #17): the `div[role="group"]` can
-  now carry an accessible name/description. HTML/ARIA attributes pass straight
-  through to the group, so the bare verb is named with plain `aria:`
-  (`aria: { label: "Tags" }` or `aria: { labelledby: "id" }`); through `f.field`
-  the Control's own visible `label:` / `hint:` get stable ids and the field wires
-  `aria-labelledby` / `aria-describedby` at them (no duplicate markup). Absent a
-  name, output is unchanged.
-- **`checkbox_group` `item_label:`** — the per-item text accessor, so a
-  `f.field(:tags, as: :checkbox_group, label: "Tags", item_label: ->(t){…})`
-  renders a visible group heading (`label:`, via the Control) AND custom item
-  labels at once — previously `label:` on the `f.field` path was eaten by the
-  heading and items fell back to `to_s`. `item_label:` wins over `label:` for the
-  item text; on the bare verb `label:` stays the item accessor and `item_label:`
-  is an alias. Absent it, behavior is unchanged.
 
 ### Changed
 
@@ -190,15 +244,6 @@ plus daisyUI's modifier groups). `PhlexForms::ClassMerge` is gone.
   registered `forms--validations--*` explicitly must update the identifier.
 
 ### Fixed
-
-- **A caller width class stacked with the `w-full` default instead of replacing
-  it**: `DelegatedField#width_class` joined `"w-full"` and the caller's
-  `class:` verbatim, so `Forms::Select(class: "w-36")` emitted
-  `class="... w-full w-36"` and stylesheet source order — not author intent —
-  picked the winner (in practice `w-full`, which blew filter selects up to full
-  width; zazu#2934). `ClassMerge` gained a width family (anchored `w-*`, so
-  `min-w-*`/`max-w-*` still compose) and `width_class` merges through it —
-  last width wins, matching the daisyui size/color family semantics.
 
 - **`f.Radio` / `Field#radio` rendered the model's current value on every radio
   instead of each radio's own value**: `field_attributes` carried `value:
@@ -215,6 +260,37 @@ plus daisyUI's modifier groups). `PhlexForms::ClassMerge` is gone.
   with `nested_attributes: false` produced `scope[assoc][0][field]`, `[1]`, …
   instead of a single `scope[assoc][field]`. It is now treated as a single
   nested scope; only genuine collections (Enumerable, not Hash) iterate.
+
+## [0.2.3] - 2026-07-08
+
+### Added
+
+- **`tag_field`** (#7): `f.field :tags, as: :tags, suggestions: [...]`, a
+  model-bound tag/chip control composed from phlex-reactive's client-only tag
+  primitives. It submits one comma-joined param; `live_tags` validates it
+  inside a `live` form.
+
+## [0.2.2] - 2026-07-08
+
+### Fixed
+
+- **`Forms::TimeZoneSelect` raised at render time** (#5): `NoMethodError` for
+  `time_zone_options_for_select` (called on the `DaisyUI::Select` receiver)
+  and `Phlex::ArgumentError: Expected a String` (an HTML-safe buffer passed to
+  `safe`). It was broken in 0.2.0 and 0.2.1.
+
+## [0.2.1] - 2026-07-08
+
+### Added
+
+- **Rails form-builder compat aliases** (#4): `Forms::Form#object` (`model`),
+  `#object_name` (`scope`) and `#[]` (`field_object`), and
+  `Forms::FieldsForBuilder#object` / `#[]`, for call sites migrating off an
+  ActionView `FormBuilder`.
+
+## [0.2.0] - 2026-07-08
+
+### Added
 
 - **`Forms::Base` declarative form classes**: subclass, declare fields in
   `#fields` where `self` IS the form (bare `field :email`, no `f.` prefix),
@@ -284,7 +360,9 @@ plus daisyUI's modifier groups). `PhlexForms::ClassMerge` is gone.
   Pass `as:` explicitly or set `PhlexForms.config.infer_from_model = false`
   to keep the old rendering.
 
-### Initial extraction
+## [0.1.0] - 2026-07-07
+
+### Added
 
 - Initial extraction of the `Forms::` Phlex form builder from the Cosmos apps.
 - Control-first builder API: `f.field :email, label:, hint:, as:, choices:`
