@@ -13,7 +13,7 @@ the whole team (and every autonomous session) shares the same conventions.
 ## Anatomy of a command
 
 A command is a markdown file under `commands/` with a YAML frontmatter block
-followed by the prompt body. `.claude/commands/tdd.md` is a good reference.
+followed by the prompt body. `.claude/commands/architect.md` is a good reference.
 
 ```markdown
 ---
