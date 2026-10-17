@@ -2,8 +2,8 @@
 
 Project instructions for every agent: Claude Code (`CLAUDE.md` imports this file),
 Cursor, Copilot, Codex, and any other AI tool working in this repo. Claude Code
-users also have `.claude/commands/` and `.claude/rules/` for slash commands and
-auto-loaded rules — this file is still the full project brief.
+users also get the shared `flow` and `ruby-gem` plugins (`.claude/settings.json`) and
+two local commands in `.claude/commands/` — this file is still the full project brief.
 
 A model-bound form builder for [Phlex](https://www.phlex.fun): `field :email`
 renders a label, an input, and an error/hint in one call, inferring the input
@@ -60,20 +60,33 @@ Command output is condensed by rtk (PreToolUse hook). Write commands in
 hook-rewritable shapes: no `for`/subshell wrappers, no `| head` on rtk-handled
 commands, `bundle exec rubocop` not `bin/rubocop`.
 
+## Workflow
+
+Facts the `flow` and `ruby-gem` plugin skills act on.
+
+- **Verify:** `bundle exec rubocop lib spec` · `bundle exec rspec` · (`bundle exec rake` runs both). Docs changes: `cd docs && bundle exec rspec && bundle exec rubocop`
+- **Specs:** fast loop `bundle exec rspec <file>`; full suite `bundle exec rspec`; two worktrees at once: yes (no database, no ports)
+- **CI:** required `Specs (Ruby 3.4)`, `Specs (Ruby 4.0)`, `Lint`, `cubic · AI code reviewer`, `conformance / Conformance settings`, `conformance / Conformance (Ruby 4.0)`; jobs in `main.yml` + `conformance.yml`; full suite on the PR (no merge queue); the docs app has no CI job; failure report none
+- **Review bot:** cubic
+- **Merge:** squash — `gh pr merge <PR> --squash --delete-branch` (ruleset `main`: squash only, linear history, every review thread resolved, 0 approvals)
+- **PR contract:** `## Summary`, `## Test plan`; exactly one `type` + at least one `area` label (Labels below); before/after screenshots for a rendered-form or `docs/` change
+- **Conflicts:** `CHANGELOG.md` — both sides' bullets, each under its own heading, main's wording where both changed one; `lib/phlex_forms/version.rb` — only the kit bumps it, so a conflict means the branch bumped on purpose: keep the branch's, else main's; `docs/Gemfile.lock` and `docs/bun.lock` — take main's, never hand-merge (a deliberate change: edit `docs/Gemfile` / `docs/package.json`, then `cd docs && bundle install` / `bun install`; stop if the re-resolve fails); `docs/app/models/doc.rb` — keep both `page` lines
+- **Worktree setup:** `bundle install`; for docs work also `cd docs && bundle install && bun install`; undo `git worktree remove <path>`
+- **Release:** `bin/release <v>` (kit, never edit; Release & docs deploy below); changelog `CHANGELOG.md`, heading `## [X.Y.Z] - YYYY-MM-DD` under `## [Unreleased]`; prep none; lockfiles `docs/Gemfile.lock` (the root one is gitignored); docs `deploy-docs.yml` on release; human none
+- **Main health:** `gh run list --workflow main.yml --branch main --event push --limit 1 --json conclusion,headSha`
+- **Upstream:** `zoolutions/*` (daisyui, phlex-reactive, docs-kit); scrub none
+- **Bench:** none
+
 ## Slash Commands
+
+The delivery workflow is the `flow` plugin (`/flow:lfg`, `/flow:plan`, `/flow:tdd`, `/flow:review-pr`,
+`/flow:github-review-pr`, `/flow:finish-prs`, `/flow:follow-through`, …) and `/ruby-gem:release`,
+`/ruby-gem:perf`. Local commands:
 
 | Command | Purpose |
 |---------|---------|
-| `/plan` | Fable-powered planning → GitHub issue or `docs/plans/` markdown (read-only; execute with `/lfg`) |
-| `/lfg` | Full autonomous workflow: branch → understand → explore → plan → TDD → verify → PR |
-| `/tdd` | Enforce RED → GREEN → REFACTOR |
 | `/architect` | Coordinate a change across the builder → components → inference → theme → live layers |
 | `/security` | Security audit (HTML escaping, model-bound params, the live action whitelist, CSRF) |
-| `/review-pr` | Review a PR for pattern compliance |
-| `/github-review-pr` | Full PR pass: fix CI failures, then resolve review comments (in that order) |
-| `/github-review-failures` | Fix failing CI checks until green |
-| `/github-review-comments` | Process unresolved PR review comments |
-| `/finish-prs` | Drive a stack of open PRs to merge-ready one at a time |
 
 ## Architecture
 
@@ -101,7 +114,7 @@ using daisyUI's CSS? Plain theme. No phlex-reactive? the `live` macro raises a c
 
 ## Model tiers (for Claude Code commands & agents)
 
-**Models.** Sessions run on `opus` (Opus 5.5) with `fable` (Fable 5.1) as the advisor (`.claude/settings.json`). Fable is spent where judgment matters most: `/plan` runs on Fable, the advisor is consulted at decision points (before choosing an approach, a schema or public API, a migration, a dependency, anything irreversible, and when a failure repeats), and the `fable-validator` agent checks every finished implementation before its pull request opens (`/lfg`, Phase 6.5). Commands pin their tier by alias, never by full model ID: `opus` for orchestration, security, full PR review, payments and production debugging; `sonnet` for the implementation specialists and TDD; `haiku` for mechanical scans. Every spawned agent names its `model:`; one that does not runs on `sonnet` (`CLAUDE_CODE_SUBAGENT_MODEL`), never on the session's model. Plan mode cannot take a model of its own: it runs on Opus and asks the advisor.
+**Models.** Sessions run on `opus` (Opus 5.5) with `fable` (Fable 5.1) as the advisor (`.claude/settings.json`). Fable is spent where judgment matters most: `/flow:plan` runs on Fable, the advisor is consulted at decision points (before choosing an approach, a schema or public API, a migration, a dependency, anything irreversible, and when a failure repeats), and the `flow:fable-validator` agent checks every finished implementation before its pull request opens (`/flow:lfg`). Commands pin their tier by alias, never by full model ID: `opus` for orchestration, security, full PR review, payments and production debugging; `sonnet` for the implementation specialists and TDD; `haiku` for mechanical scans. Every spawned agent names its `model:`; one that does not runs on `sonnet` (`CLAUDE_CODE_SUBAGENT_MODEL`), never on the session's model. Plan mode cannot take a model of its own: it runs on Opus and asks the advisor.
 
 ## Testing
 
@@ -111,7 +124,8 @@ using daisyUI's CSS? Plain theme. No phlex-reactive? the `live` macro raises a c
 - `Forms::Live` specs are guarded by `if defined?(Phlex::Reactive)` and stub the reply (the endpoint isn't booted); a class-level assertion (`skip_verify_authorized?(:validate)`) guards the one behavior specs can't drive.
 - Aspire to 100% for `PhlexForms::Inference` / `Configuration` / `Theme` — the public API sites depend on.
 - CI: `.github/workflows/main.yml` runs `bundle exec rspec` on Ruby 3.4 + 4.0 for every push to `main` and every PR; lint on 4.0.
-- See `.claude/rules/testing.md`.
+- Cop specs (`spec/rubocop/cops_spec.rb`) run RuboCop against source snippets: the `RawForm` / `LegacyFormMethod` cops flag and autocorrect.
+- Coverage: 80%+ across the gem.
 
 ## Writing a docs page for phlex-forms' own docs site (under `docs/`)
 
@@ -170,8 +184,8 @@ gh issue comment <n> --attach ./repro.mp4                       # video renders 
 ## Labels
 
 Every pull request carries exactly one `type` label and at least one `area`
-label from `.github/labels.yml` — never a `status` label. `/plan` labels the
-issue, `/lfg` copies the issue's `type` and `area` labels onto the PR (never
+label from `.github/labels.yml` — never a `status` label. `/flow:plan` labels the
+issue, `/flow:lfg` copies the issue's `type` and `area` labels onto the PR (never
 `plan` or another status label). Without an issue, the type comes from the
 change's conventional-commit prefix and the areas from
 `bin/labels infer $(git diff --name-only origin/main...HEAD)`. Labels change in
@@ -186,7 +200,6 @@ labels kit (canonical copy in docs-kit): never edit them in place.
 
 ## More Documentation
 
-- `.claude/commands/` — slash command definitions
-- `.claude/rules/` — coding style, git workflow, testing, agents
+- `.claude/commands/` — the local slash commands
 - `README.md` — the full field API / inference / theming / live-validation guide
 - `docs/` — the published documentation site (docs-kit)

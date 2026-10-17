@@ -5,8 +5,7 @@ the whole team (and every autonomous session) shares the same conventions.
 
 ```
 .claude/
-├── commands/   Slash commands (/lfg, /tdd, /plan, /security, …) — one markdown file each
-├── rules/      Standing rules auto-loaded into context (coding-style, testing, git-workflow, agents)
+├── commands/   Slash commands (/architect, /security) — the delivery workflow is the `flow` plugin — one markdown file each
 ├── README.md   This file — how to author a command
 └── SKILL_TEMPLATE.md   Copy-paste starting point for a new command
 ```
@@ -47,15 +46,15 @@ latest model in that tier, so a command never goes stale on an outdated pin.
 | Tier | Use for | Commands here |
 |------|---------|---------------|
 | `haiku` | Mechanical / config work, diff pattern-scanning | *(none yet)* |
-| `sonnet` | Prescriptive, pattern-following passes with a tight prompt | `/tdd`, `/github-review-comments`, `/github-review-failures` |
-| `opus` | Orchestration, security, review synthesis, and reasoning-heavy specialists | `/lfg`, `/architect`, `/security`, `/review-pr`, `/github-review-pr`, `/finish-prs` |
-| `fable` | Read-only planning that hands execution to cheaper models; also the session advisor and the `fable-validator` agent | `/plan` |
+| `sonnet` | Prescriptive, pattern-following passes with a tight prompt | *(none locally; the `flow` plugin's `/flow:tdd`, `/flow:github-review-*`)* |
+| `opus` | Orchestration, security, review synthesis, and reasoning-heavy specialists | `/architect`, `/security` (plus `flow`'s `/flow:lfg`, `/flow:review-pr`, `/flow:finish-prs`) |
+| `fable` | Read-only planning that hands execution to cheaper models; also the session advisor and the `flow:fable-validator` agent | `/flow:plan` |
 
 Rules of thumb:
 
 - **Always use the alias**, never `claude-opus-4-8` or another full model ID —
   aliases track the latest model per tier and never rot.
-- **`fable` is pinned on `/plan` and on the `fable-validator` agent.** Sessions run
+- **`fable` is pinned on `/flow:plan` and on the `flow:fable-validator` agent.** Sessions run
   on `opus` with `fable` as the advisor (`.claude/settings.json`).
 - **Subagents don't inherit the tier for free.** When a command (or you) spawns a
   subagent for mechanical work — file finding, naming-convention sweeps, pattern
