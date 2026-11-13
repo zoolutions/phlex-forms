@@ -1,0 +1,20 @@
+spec/forms/validations/introspector_spec.rb
+  s_e45876db633768::t_5b5381789172ac 48-63
+  s_e45876db633768::t_1295ae92e07a0b 269-273
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "98734f3405367fdf92c0117ca3478c915ec0a021",
+  "prompts": {},
+  "sessions": {
+    "s_e45876db633768": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ae14a46e-d3b7-4879-be65-01b040f3e076",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "mhenrixon <mikael@mhenrixon.com>"
+    }
+  }
+}
