@@ -74,9 +74,11 @@ export default class extends FieldValidatorController {
     const counter = this.counterElement()
     if (!counter) return
     const length = this.codepointLength(this.element.value)
-    const { limit, state } = this.counterState(length)
+    const { limit, state, advisory } = this.counterState(length)
     counter.textContent = `${length} / ${limit}`
-    counter.classList.toggle("text-warning", state === "warning")
+    // Without a recommended length the counter is exactly 0.5.0's: a caller's
+    // own `text-warning` on a pre-rendered counter target is left alone.
+    if (advisory) counter.classList.toggle("text-warning", state === "warning")
     counter.classList.toggle("text-error", state === "error")
   }
 
@@ -88,10 +90,12 @@ export default class extends FieldValidatorController {
     const maximum = this.hasMaximumValue ? this.maximumValue : null
     const recommended = this.recommendedLength(maximum)
 
-    if (maximum !== null && length > maximum) return { limit: maximum, state: "error" }
-    if (recommended === null) return { limit: maximum, state: null }
-    if (length <= recommended) return { limit: recommended, state: null }
-    return { limit: maximum ?? recommended, state: "warning" }
+    const advisory = recommended !== null
+
+    if (maximum !== null && length > maximum) return { limit: maximum, state: "error", advisory }
+    if (!advisory) return { limit: maximum, state: null, advisory }
+    if (length <= recommended) return { limit: recommended, state: null, advisory }
+    return { limit: maximum ?? recommended, state: "warning", advisory }
   }
 
   recommendedLength(maximum) {

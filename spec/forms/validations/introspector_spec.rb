@@ -248,6 +248,11 @@ describe Forms::Validations::Introspector do
       expect(data).to include(validations__length_recommended_value: "32", validations__length_allow_blank_value: "true")
     end
 
+    it "keeps the Range shorthand for an inline length rule" do
+      data = Forms::Validations::ManualRules.new(length: 3..50).data_attributes
+      expect(data).to include(validations__length_minimum_value: "3", validations__length_maximum_value: "50")
+    end
+
     it "still raises for a length rule with neither a bound nor recommended:" do
       expect { Forms::Validations::ManualRules.new(length: { allow_blank: true }).data_attributes }
         .to raise_error(ArgumentError, /Specify the :in, :within, :maximum, :minimum, or :is option/)

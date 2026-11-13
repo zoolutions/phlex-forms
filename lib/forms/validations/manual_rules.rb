@@ -63,7 +63,7 @@ module Forms
             when :presence
               validates :value, presence: opts.is_a?(Hash) ? opts : true if opts
             when :length
-              if opts.key?(:recommended) && LENGTH_BOUNDS.none? { |bound| opts.key?(bound) }
+              if opts.is_a?(Hash) && opts.key?(:recommended) && LENGTH_BOUNDS.none? { |bound| opts.key?(bound) }
                 validates_with Advisory::LengthValidator, opts.merge(attributes: [:value])
               else
                 validates :value, length: opts
