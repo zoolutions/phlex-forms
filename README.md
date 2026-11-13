@@ -359,6 +359,31 @@ f.field :note, validate: { length: { maximum: 30, too_long: "keep it under %{cou
 Without a `message:`, the bundled messages apply: they ship for `en` / `fr` /
 `af`; override them page-wide via `window.PhlexForms.messages`.
 
+The length counter can count against an advisory `recommended:` length below
+the hard `maximum:`. It never adds an error, never becomes `maxlength`, and the
+server ignores it (ActiveModel keeps the unknown option without reading it):
+
+```ruby
+f.field :title, as: :textarea, validate: { length: { maximum: 50, recommended: 32 } }
+validates :title, length: { maximum: 50, recommended: 32 }  # the same, from the model
+```
+
+| Length | Counter | Class |
+|---|---|---|
+| up to `recommended` | `n / recommended` | none |
+| past `recommended`, up to `maximum` | `n / maximum` | `text-warning` |
+| past `maximum` | `n / maximum` | `text-error` (and the `too_long` message) |
+
+Without a `maximum:`, the counter reads `n / recommended` and turns
+`text-warning` past it. An inline `validate: { length: { recommended: 32 } }`
+needs no bound; a model-level `validates … length:` still needs one, because
+ActiveModel requires it there. A `recommended:` that is not a positive Integer
+below the maximum, or one next to an exact `is:`, is ignored. The counter's
+`text-warning` / `text-error` classes are toggled from the gem's JavaScript, so
+your Tailwind build must include them. The counter comes from these client-side
+rules only: live validation's server round trip (`Forms::Live`) adds none, and
+a live field shows one only when it also carries client-side length rules.
+
 ## Nested attributes, collections & escape valves
 
 ```ruby

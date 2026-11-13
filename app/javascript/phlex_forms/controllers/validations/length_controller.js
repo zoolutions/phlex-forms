@@ -3,12 +3,14 @@ import { interpolate } from "phlex_forms/i18n"
 
 // Mirrors ActiveModel::Validations::LengthValidator. Reads:
 //   - maximum / minimum / is
+//   - recommended (advisory: the counter's target, never an error)
 //   - too-long / too-short / wrong-length messages (win over `message`)
 //   - allow-blank / allow-nil
 //
-// Counter is rendered next to the input when `maximum` is set, so
-// the user gets a live "12 / 60" indicator without having to wait
-// for blur.
+// Counter is rendered next to the input when `maximum` or `recommended`
+// is set, so the user gets a live "12 / 60" indicator without having to
+// wait for blur. Past `recommended` it counts against `maximum` and turns
+// `text-warning`; past `maximum` it turns `text-error`.
 export default class extends FieldValidatorController {
   // Stimulus walks the prototype chain to accumulate `static values`
   // and `static targets`, so we only declare the validator-specific
@@ -21,6 +23,7 @@ export default class extends FieldValidatorController {
     maximum: Number,
     minimum: Number,
     is: Number,
+    recommended: Number,
     tooLongMessage: String,
     tooShortMessage: String,
     wrongLengthMessage: String,
@@ -28,7 +31,7 @@ export default class extends FieldValidatorController {
 
   connect() {
     super.connect()
-    if (this.hasMaximumValue) {
+    if (this.counts) {
       this.renderCounter()
       this.element.addEventListener("input", this.updateCounter)
     }
@@ -36,9 +39,13 @@ export default class extends FieldValidatorController {
 
   disconnect() {
     super.disconnect()
-    if (this.hasMaximumValue) {
+    if (this.counts) {
       this.element.removeEventListener("input", this.updateCounter)
     }
+  }
+
+  get counts() {
+    return this.hasMaximumValue || this.recommendedLength(null) !== null
   }
 
   check(value) {
@@ -67,8 +74,35 @@ export default class extends FieldValidatorController {
     const counter = this.counterElement()
     if (!counter) return
     const length = this.codepointLength(this.element.value)
-    counter.textContent = `${length} / ${this.maximumValue}`
-    counter.classList.toggle("text-error", length > this.maximumValue)
+    const { limit, state, advisory } = this.counterState(length)
+    counter.textContent = `${length} / ${limit}`
+    // Without a recommended length the counter is exactly 0.5.0's: a caller's
+    // own `text-warning` on a pre-rendered counter target is left alone.
+    if (advisory) counter.classList.toggle("text-warning", state === "warning")
+    counter.classList.toggle("text-error", state === "error")
+  }
+
+  // The counter's denominator and state. `recommended` applies only below
+  // `maximum` (the server drops it otherwise; this guards a hand-written
+  // attribute): up to it the counter reads "n / recommended", past it
+  // "n / maximum" in a warning colour, past `maximum` an error.
+  counterState(length) {
+    const maximum = this.hasMaximumValue ? this.maximumValue : null
+    const recommended = this.recommendedLength(maximum)
+
+    const advisory = recommended !== null
+
+    if (maximum !== null && length > maximum) return { limit: maximum, state: "error", advisory }
+    if (!advisory) return { limit: maximum, state: null, advisory }
+    if (length <= recommended) return { limit: recommended, state: null, advisory }
+    return { limit: maximum ?? recommended, state: "warning", advisory }
+  }
+
+  recommendedLength(maximum) {
+    if (!this.hasRecommendedValue) return null
+    const recommended = this.recommendedValue
+    if (!(recommended > 0) || (maximum !== null && recommended >= maximum)) return null
+    return recommended
   }
 
   // Ruby's String#length counts Unicode codepoints; JS's String#length
