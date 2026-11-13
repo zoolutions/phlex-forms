@@ -102,12 +102,14 @@ class Views::Docs::Pages::ClientValidation < DocsUI::Page
         `n / recommended` and turns `text-warning` past it. An inline `validate: { length: { recommended: 32 } }`
         needs no bound; a model-level `validates … length:` still needs one,
         because ActiveModel requires it there. A `recommended:` that is not a
-        positive Integer below the maximum is ignored, and the counter behaves
-        as if it were not set.
+        positive Integer below the maximum, or one next to an exact `is:`, is
+        ignored, and the counter behaves as if it were not set.
       MD
       DocsUI::Callout(:note) do
         plain "The counter's text-warning and text-error classes are toggled from the gem's JavaScript, "
-        plain "so your Tailwind build must include them. Live validation renders no counter."
+        plain "so your Tailwind build must include them. The counter comes from these client-side rules only: "
+        plain "live validation's server round trip adds none, so a live field shows one only when it also "
+        plain "carries client-side length rules."
       end
     end
   end

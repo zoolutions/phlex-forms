@@ -45,9 +45,22 @@ describe Forms::Validations::Introspector do
       )
     end
 
-    it "compares against a range's maximum" do
-      data = data_for(:title) { validates :title, length: { in: 3..50, recommended: 32 } }
-      expect(data[:validations__length_recommended_value]).to eq("32")
+    it "compares against a range's maximum (in: and within:)" do
+      expect(data_for(:title) { validates :title, length: { in: 3..50, recommended: 32 } })
+        .to include(validations__length_recommended_value: "32")
+      expect(data_for(:title) { validates :title, length: { within: 3..50, recommended: 32 } })
+        .to include(validations__length_recommended_value: "32")
+      expect(data_for(:title) { validates :title, length: { in: 3..50, recommended: 60 } })
+        .not_to have_key(:validations__length_recommended_value)
+      expect(data_for(:title) { validates :title, length: { within: 3..50, recommended: 50 } })
+        .not_to have_key(:validations__length_recommended_value)
+    end
+
+    it "ignores it next to an exact is: length (nothing left to recommend)" do
+      expect(data_for(:title) { validates :title, length: { is: 5, recommended: 10 } })
+        .to eq(controller: "validations--length", validations__length_is_value: "5")
+      expect(data_for(:title) { validates :title, length: { is: 10, recommended: 5 } })
+        .not_to have_key(:validations__length_recommended_value)
     end
 
     it "emits it with a bound other than maximum (no maximum to exceed)" do
@@ -251,6 +264,11 @@ describe Forms::Validations::Introspector do
     it "keeps the Range shorthand for an inline length rule" do
       data = Forms::Validations::ManualRules.new(length: 3..50).data_attributes
       expect(data).to include(validations__length_minimum_value: "3", validations__length_maximum_value: "50")
+    end
+
+    it "still raises for a misspelled bound next to a bound-less recommended:" do
+      expect { Forms::Validations::ManualRules.new(length: { recommended: 32, maxium: 50 }).data_attributes }
+        .to raise_error(ArgumentError, /Specify the :in, :within, :maximum, :minimum, or :is option/)
     end
 
     it "still raises for a length rule with neither a bound nor recommended:" do

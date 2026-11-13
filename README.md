@@ -378,9 +378,11 @@ Without a `maximum:`, the counter reads `n / recommended` and turns
 `text-warning` past it. An inline `validate: { length: { recommended: 32 } }`
 needs no bound; a model-level `validates … length:` still needs one, because
 ActiveModel requires it there. A `recommended:` that is not a positive Integer
-below the maximum is ignored. The counter's `text-warning` / `text-error`
-classes are toggled from the gem's JavaScript, so your Tailwind build must
-include them. Live validation (`Forms::Live`) renders no counter.
+below the maximum, or one next to an exact `is:`, is ignored. The counter's
+`text-warning` / `text-error` classes are toggled from the gem's JavaScript, so
+your Tailwind build must include them. The counter comes from these client-side
+rules only: live validation's server round trip (`Forms::Live`) adds none, and
+a live field shows one only when it also carries client-side length rules.
 
 ## Nested attributes, collections & escape valves
 

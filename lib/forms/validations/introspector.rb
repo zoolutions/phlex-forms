@@ -172,7 +172,7 @@ module Forms
           attrs[:maximum] = range.max.to_s
         end
 
-        attrs[:recommended] = opts[:recommended].to_s if recommended?(opts[:recommended], range ? range.max : opts[:maximum])
+        attrs[:recommended] = opts[:recommended].to_s if recommended?(opts, range ? range.max : opts[:maximum])
         attrs[:allow_blank] = "true" if opts[:allow_blank]
         attrs[:allow_nil] = "true" if opts[:allow_nil]
         attrs
@@ -181,9 +181,12 @@ module Forms
       # `recommended:` is advisory (the counter's target, never an error), so
       # it is kept only when it can sit below the hard limit: a positive
       # Integer under a numeric maximum, or any positive Integer when there is
-      # no maximum. Anything else is dropped without raising.
-      def recommended?(recommended, maximum)
+      # no maximum. An exact `is:` length leaves nothing to recommend. Anything
+      # else is dropped without raising.
+      def recommended?(opts, maximum)
+        recommended = opts[:recommended]
         return false unless recommended.is_a?(Integer) && recommended.positive?
+        return false if opts.key?(:is)
         return true if maximum.nil?
 
         maximum.is_a?(Numeric) && recommended < maximum

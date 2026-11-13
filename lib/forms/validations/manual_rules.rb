@@ -31,7 +31,9 @@ module Forms
         end
       end
 
-      LENGTH_BOUNDS = %i[in within maximum minimum is].freeze
+      # The only keys a bound-less advisory rule may carry. Anything else (a
+      # misspelled `maxium:`) goes to ActiveModel, which raises for the missing bound.
+      ADVISORY_LENGTH_KEYS = %i[recommended allow_blank allow_nil].freeze
 
       def initialize(rules)
         @rules = rules
@@ -63,7 +65,7 @@ module Forms
             when :presence
               validates :value, presence: opts.is_a?(Hash) ? opts : true if opts
             when :length
-              if opts.is_a?(Hash) && opts.key?(:recommended) && LENGTH_BOUNDS.none? { |bound| opts.key?(bound) }
+              if opts.is_a?(Hash) && opts.key?(:recommended) && (opts.keys - ADVISORY_LENGTH_KEYS).empty?
                 validates_with Advisory::LengthValidator, opts.merge(attributes: [:value])
               else
                 validates :value, length: opts
