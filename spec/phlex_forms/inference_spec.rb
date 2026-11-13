@@ -190,6 +190,15 @@ describe PhlexForms::Inference do
       expect(resolve(model, :handle).attributes[:maxlength]).to eq(30)
     end
 
+    it "keeps maxlength on the maximum, never an advisory recommended length" do
+      model = build_model(
+        :user, handle: nil,
+        validations: -> { validates :handle, length: { maximum: 50, recommended: 32 } }
+      )
+
+      expect(resolve(model, :handle).attributes[:maxlength]).to eq(50)
+    end
+
     it "maps numericality bounds to min/max on number fields only" do
       model = build_model(
         :user, age: nil, code: nil,

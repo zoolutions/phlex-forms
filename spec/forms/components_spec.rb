@@ -328,6 +328,15 @@ describe "Forms components" do
       expect(output).to include('data-validations--format-message-value="lowercase only"')
     end
 
+    it "renders an advisory recommended: length without turning it into maxlength (issue #51)" do
+      output = render_form(partner) do |f|
+        f.field(:slug, as: :textarea, validate: { length: { maximum: 50, recommended: 32 } })
+      end
+      expect(output).to include('data-validations--length-maximum-value="50"')
+      expect(output).to include('data-validations--length-recommended-value="32"')
+      expect(output).not_to include("maxlength")
+    end
+
     it "opts a field out with validate: false" do
       output = render_form(partner, validate: true) { |f| f.field(:title, validate: false) }
       expect(output).not_to include("validations--presence")

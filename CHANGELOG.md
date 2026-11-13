@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **An advisory `recommended:` length on the length rule** (#51):
+  `validate: { length: { maximum: 50, recommended: 32 } }`, or the same
+  options on a model's `validates … length:`, emits
+  `data-validations--length-recommended-value`. The counter reads
+  `n / recommended` up to it, then `n / maximum` with `text-warning`, and
+  `text-error` past the maximum as before. It never adds an error and never
+  becomes `maxlength`; the server ignores it. A counter now renders for
+  `recommended:` alone, and an inline rule may give `recommended:` without a
+  bound. A value that is not a positive Integer below the maximum is ignored.
+
 ## [0.5.0] - 2026-10-15
 
 ### Upgrading to 0.5

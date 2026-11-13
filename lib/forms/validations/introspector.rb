@@ -166,15 +166,27 @@ module Forms
           attrs[key] = opts[key].to_s if opts.key?(key)
         end
 
-        if opts.key?(:in) || opts.key?(:within)
-          range = opts[:in] || opts[:within]
+        range = opts[:in] || opts[:within]
+        if range
           attrs[:minimum] = range.min.to_s
           attrs[:maximum] = range.max.to_s
         end
 
+        attrs[:recommended] = opts[:recommended].to_s if recommended?(opts[:recommended], range ? range.max : opts[:maximum])
         attrs[:allow_blank] = "true" if opts[:allow_blank]
         attrs[:allow_nil] = "true" if opts[:allow_nil]
         attrs
+      end
+
+      # `recommended:` is advisory (the counter's target, never an error), so
+      # it is kept only when it can sit below the hard limit: a positive
+      # Integer under a numeric maximum, or any positive Integer when there is
+      # no maximum. Anything else is dropped without raising.
+      def recommended?(recommended, maximum)
+        return false unless recommended.is_a?(Integer) && recommended.positive?
+        return true if maximum.nil?
+
+        maximum.is_a?(Numeric) && recommended < maximum
       end
 
       def format_attrs(validator)

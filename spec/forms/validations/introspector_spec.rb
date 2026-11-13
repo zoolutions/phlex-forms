@@ -35,6 +35,49 @@ describe Forms::Validations::Introspector do
     expect(data[:validations__length_maximum_value]).to eq("60")
   end
 
+  describe "an advisory recommended: length" do
+    it "emits the recommended value below the maximum" do
+      data = data_for(:title) { validates :title, length: { maximum: 50, recommended: 32 } }
+      expect(data).to include(
+        controller: "validations--length",
+        validations__length_maximum_value: "50",
+        validations__length_recommended_value: "32"
+      )
+    end
+
+    it "compares against a range's maximum" do
+      data = data_for(:title) { validates :title, length: { in: 3..50, recommended: 32 } }
+      expect(data[:validations__length_recommended_value]).to eq("32")
+    end
+
+    it "emits it with a bound other than maximum (no maximum to exceed)" do
+      data = data_for(:title) { validates :title, length: { minimum: 3, recommended: 32 } }
+      expect(data).to include(validations__length_minimum_value: "3", validations__length_recommended_value: "32")
+      expect(data).not_to have_key(:validations__length_maximum_value)
+    end
+
+    {
+      "equal to the maximum" => { maximum: 50, recommended: 50 },
+      "above the maximum" => { maximum: 50, recommended: 60 },
+      "zero" => { maximum: 50, recommended: 0 },
+      "negative" => { maximum: 50, recommended: -5 },
+      "not an Integer" => { maximum: 50, recommended: "32" },
+      "a Float" => { maximum: 50, recommended: 32.5 },
+      "compared to a maximum that is not a number" => { maximum: ->(_r) { 50 }, recommended: 32 }
+    }.each do |label, options|
+      it "ignores it when #{label}, keeping the rest of the rule" do
+        data = data_for(:title) { validates :title, length: options }
+        expect(data[:controller]).to eq("validations--length")
+        expect(data).not_to have_key(:validations__length_recommended_value)
+      end
+    end
+
+    it "emits no recommended value for a rule without one (unchanged from before)" do
+      data = data_for(:title) { validates :title, length: { maximum: 50 } }
+      expect(data.keys).to contain_exactly(:controller, :validations__length_maximum_value)
+    end
+  end
+
   it "consolidates multiple validators into one space-joined controller list" do
     data = data_for(:title) { validates :title, presence: true, length: { maximum: 60 } }
     expect(data[:controller]).to eq("validations--presence validations--length")
@@ -186,6 +229,28 @@ describe Forms::Validations::Introspector do
       expect(data[:controller]).to include("validations--length")
       expect(data[:controller]).to include("validations--presence")
       expect(data[:validations__length_maximum_value]).to eq("30")
+    end
+
+    it "carries an advisory recommended: length through" do
+      data = Forms::Validations::ManualRules.new(length: { maximum: 50, recommended: 32 }).data_attributes
+      expect(data).to include(validations__length_maximum_value: "50", validations__length_recommended_value: "32")
+    end
+
+    it "accepts recommended: alone, with no bound, as an advisory-only counter" do
+      data = Forms::Validations::ManualRules.new(length: { recommended: 32 }).data_attributes
+      expect(data).to eq(controller: "validations--length", validations__length_recommended_value: "32")
+    end
+
+    it "keeps allow_blank: and the other rules next to a bound-less recommended:" do
+      data = Forms::Validations::ManualRules.new(length: { recommended: 32, allow_blank: true }, presence: true)
+        .data_attributes
+      expect(data[:controller]).to eq("validations--length validations--presence")
+      expect(data).to include(validations__length_recommended_value: "32", validations__length_allow_blank_value: "true")
+    end
+
+    it "still raises for a length rule with neither a bound nor recommended:" do
+      expect { Forms::Validations::ManualRules.new(length: { allow_blank: true }).data_attributes }
+        .to raise_error(ArgumentError, /Specify the :in, :within, :maximum, :minimum, or :is option/)
     end
 
     it "keeps message: from the rules hash" do

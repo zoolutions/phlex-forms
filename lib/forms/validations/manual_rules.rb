@@ -21,6 +21,18 @@ module Forms
     #     acceptance: true,
     #   )
     class ManualRules
+      # ActiveModel's LengthValidator demands a bound, so `length: { recommended: 32 }`
+      # alone (an advisory counter with no limit) can't go through `validates`.
+      # This no-op validator carries the options instead; the Introspector matches
+      # it by its short name, LengthValidator, and it never adds an error.
+      module Advisory
+        class LengthValidator < ActiveModel::EachValidator
+          def validate_each(_record, _attribute, _value); end
+        end
+      end
+
+      LENGTH_BOUNDS = %i[in within maximum minimum is].freeze
+
       def initialize(rules)
         @rules = rules
       end
@@ -51,7 +63,11 @@ module Forms
             when :presence
               validates :value, presence: opts.is_a?(Hash) ? opts : true if opts
             when :length
-              validates :value, length: opts
+              if opts.key?(:recommended) && LENGTH_BOUNDS.none? { |bound| opts.key?(bound) }
+                validates_with Advisory::LengthValidator, opts.merge(attributes: [:value])
+              else
+                validates :value, length: opts
+              end
             when :format
               validates :value, format: opts
             when :numericality
