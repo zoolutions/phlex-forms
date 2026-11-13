@@ -1,0 +1,26 @@
+app/javascript/phlex_forms/controllers/validations/length_controller.js
+  s_e45876db633768::t_62a35481eef1f1 77,79-81
+  s_e45876db633768::t_3ab54753e7db16 93-98
+CHANGELOG.md
+  s_e45876db633768::t_5e29ce4f907ea1 10-11
+lib/forms/validations/manual_rules.rb
+  s_e45876db633768::t_62f4ebe23a7a8a 66
+spec/forms/validations/introspector_spec.rb
+  s_e45876db633768::t_d812b04e53405e 251-255
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "9592c39101c06c0e766a3fb00a28a4d94b6053d9",
+  "prompts": {},
+  "sessions": {
+    "s_e45876db633768": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ae14a46e-d3b7-4879-be65-01b040f3e076",
+        "model": "claude-fable-5-2"
+      },
+      "human_author": "mhenrixon <mikael@mhenrixon.com>"
+    }
+  }
+}
